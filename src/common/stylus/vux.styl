@@ -1,0 +1,136 @@
+@import './variable.styl'
+
+.vux-group
+  .weui-cells
+    margin-top: 0
+    &:before
+      display: none
+    &:after
+      display: none
+    .weui-cell
+      background: $color-background
+      color: $color-text-ll
+      font-size: $font-size-medium-x
+      &:before
+        display: none
+      &:after
+        display: none
+    .weui-cell_access
+      .weui-cell__ft
+        padding-right: 20px
+        &:after
+          width: 10px
+          height: 10px
+          content: ' '
+
+  .weui-cells_radio
+    color: #222
+    font-size: $font-size-medium-x
+    .weui-icon-checked:before
+      color: $color-theme
+
+  .dp-header
+    .dp-item.dp-right.vux-datetime-confirm
+        color: $color-theme
+
+  .vux-tab-container
+    .vux-tab
+      background: $color-background
+      .vux-tab-item
+        font-size: $font-size-medium-x
+
+  .vux-number-round
+    .vux-number-input
+      background: $color-background
+    .vux-number-selector-sub, .vux-number-selector-plus
+        border: 1px solid $color-theme
+
+  /*
+    add
+   */
+  .vux-number-round
+    .vux-number-selector
+      width: 30px
+      height: 30px
+      border-radius: 50%
+      svg
+        fill: $color-theme
+        width: 30px
+        height: 30px
+      &+.vux-number-input
+        padding: 10px 0
+        font-size: $font-size-medium-x
+
+  /*
+    user-center / state-matter-item
+   */
+  .cell-item
+    .weui-cell__ft
+      padding: 0 10px
+      background: $color-highlight-background
+      border-radius: 50%
+      color: $color-theme-dd
+
+  /*
+    user-dialog
+   */
+  .vux-dialog-input
+    margin: 20px
+    .weui-input::-webkit-input-placeholder
+      color: $color-text-l
+      font-size: $font-size-medium-x
+    .weui-input
+      border-bottom: 1px solid $color-text-d
+      font-size: $font-size-medium
+  .vux-dialog-input:before
+    display: none
+
+  /*
+    task-list dialog
+   */
+  .dialog-inline-x-number
+    a, input
+      height: 80px
+      padding: 0
+      border: none
+      svg
+        height: 100%
+        padding: 0 20px
+        fill: $color-sub-theme
+    input
+      background: $color-theme-d
+      color: $color-text-l
+      font-size: $font-size-medium-x
+
+/*
+  popup-picker
+ */
+.vux-popup-picker
+  .vux-popup-picker-container
+    .vux-popup-header
+      font-size: $font-size-large
+    .scroller-item
+      font-size: $font-size-medium-x
+
+/*
+  popup-radio
+ */
+.v-transfer-dom
+  .vux-popup-dialog
+    max-height: 50%
+    .weui-cells_radio
+      .weui-cell_radio
+        color: $color-background
+        font-size: $font-size-medium-x
+
+/*
+  toast
+ */
+.vux-toast
+  .weui-toast.vux-toast-middle, .vux-toast-bottom, .vux-toast-top
+    .weui-icon_toast:before
+      color: $base-orange
+    .weui-toast__content
+      margin: 60px 20px 30px 20px
+      font-size: $font-size-medium-x
+      color: $base-orange
