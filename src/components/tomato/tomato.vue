@@ -266,6 +266,7 @@ export default {
       return input
     },
     toggleBtnShow (isShow) {
+      console.log('toggleBtnShow', isShow)
       this.btnShow = isShow
     }
   },
