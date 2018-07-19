@@ -26,7 +26,7 @@
            </svg>
          </span>
         </div>
-        <div :style="radialTextStyle" v-else>{{nowTime}}</div>
+        <div :style="radialTextStyle" v-else @click="togglePlan">{{nowTime}}</div>
       </div>
       <svg class="radial-progress-bar"
            :width="diameter"
@@ -134,6 +134,7 @@ export default {
       completePomodoro: 0,
       strokeDashoffset: this.circumference,
       durationSec: this.workDuration * 60,
+      timeFlag: false,
       btnShow: false,
       restStatus: false
     }
@@ -155,7 +156,6 @@ export default {
     innerCircleDiameter () {
       return this.diameter - (this.strokeWidth * 2)
     },
-
     innerCircleRadius () {
       return this.innerCircleDiameter / 2
     },
@@ -221,13 +221,24 @@ export default {
   },
 
   methods: {
+    togglePlan() {
+      if (this.timeFlag) {
+        this.stopProgress()
+      } else {
+        this.changeProgress()
+      }
+      this.timeFlag = !this.timeFlag
+    },
     changeProgress () {
       // this.$refs.audioStart.play()
+      // this.btnShow = false
       if (this.gradientAnimation) {
         clearInterval(this.gradientAnimation)
       }
       this.gradientAnimation = setInterval(() => {
         this.durationSec -= 1
+        // this.secondToTime(durationSec)
+        // console.log('this.nowTime', this.nowTime)
         if (this.finishedPercentage >= 1 && !this.restStatus) {
           // this.$refs.audioEnd.play()
           this.completePomodoro += 1
@@ -266,6 +277,7 @@ export default {
       return input
     },
     toggleBtnShow (isShow) {
+      console.log('toggleBtnShow', isShow)
       this.btnShow = isShow
     }
   },

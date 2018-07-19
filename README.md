@@ -1,24 +1,21 @@
-# 番茄时钟
+# vue-music
 
-> 一款应用番茄工作法的任务管理 **webapp**
+> 番茄时钟
 
-## 功能介绍
+## Build Setup
 
-> 1. 每个项目下可以新建多个事项，事项可以放在 **整理箱** 或 **任务列表** 中 <br />
-> 2. 任务列表中的事项可以添加到 **计划列表** 中，计划列表包括今日计划和逾期计划 <br />
-> 3. 每个计划按照 [番茄工作法](http://fanqie.com) 来完成<br />
-   
-### 概念介绍
-    1. 整理箱：不太紧急的任务，即目前还没排上日程的事项
-    2. 任务列表：比较紧急，已经排上日程的事项
-    3. 计划列表：迫切需要完成的任务
-    4. 三者的关系：整理箱与任务列表的事项可以互相转换，计划列表只能从任务列表中选取，或直接创建今日计划
+``` bash
+# install dependencies
+npm install
 
-### 番茄工作法介绍
-    1. 
-    2. 
- 
-## 未来功能实现
-> 1. 统计任务完成情况
+# serve with hot reload at localhost:8080
+npm run dev
 
-## 展示
+# build for production with minification
+npm run build
+
+# build for production and view the bundle analyzer report
+npm run build --report
+```
+
+For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
