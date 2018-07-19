@@ -1,4 +1,3 @@
-const path = require('path')
 var utils = require('./utils')
 var webpack = require('webpack')
 var config = require('../config')
@@ -13,10 +12,6 @@ Object.keys(baseWebpackConfig.entry).forEach(function (name) {
 })
 
 module.exports = merge(baseWebpackConfig, {
-  // 减小模块的查找范围
-  resolve: {
-    modules: [path.resolve(__dirname, 'node_modules')],
-  },
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap })
   },

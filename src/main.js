@@ -12,6 +12,8 @@ import VueLazyload from 'vue-lazyload'
 import echarts from 'echarts'
 import { Icon } from 'element-ui'
 import { ToastPlugin, TransferDom } from 'vux'
+import AlloyFinger from 'alloyfinger'
+import AlloyFingerPlugin from 'alloyfinger/vue/alloy_finger.vue'
 
 // import 'common/stylus/index.styl'
 
@@ -23,6 +25,9 @@ Vue.prototype.$echarts = echarts
 Vue.use(Icon)
 Vue.use(ToastPlugin)
 Vue.directive('transfer-dom', TransferDom)
+Vue.use(AlloyFingerPlugin, {
+  AlloyFinger
+})
 
 Vue.use(VueRouter)
 const router = createRouter()

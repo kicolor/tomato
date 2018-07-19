@@ -26,7 +26,12 @@
            </svg>
          </span>
         </div>
-        <div :style="radialTextStyle" v-else @click="togglePlan">{{nowTime}}</div>
+        <div :style="radialTextStyle" v-else
+          v-finger:single-tap="togglePlan"
+          v-finger:long-tap="longTap"
+          v-finger:double-tap="doubleTap">
+          {{nowTime}}
+        </div>
       </div>
       <svg class="radial-progress-bar"
            :width="diameter"
@@ -221,7 +226,14 @@ export default {
   },
 
   methods: {
+    longTap() {
+      console.log('longTap')
+    },
+    doubleTap() {
+      console.log('doubleTap')
+    },
     togglePlan() {
+      console.log('tap')
       if (this.timeFlag) {
         this.stopProgress()
       } else {
