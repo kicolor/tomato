@@ -13,7 +13,10 @@ const state = {
   topList: {},
   searchHistory: loadSearch(),
   playHistory: loadPlay(),
-  favoriteList: loadFavorite()
+  favoriteList: loadFavorite(),
+  test: 'test store of state',
+  planList: [],
+  tomato: {}
 }
 
 export default state

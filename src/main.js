@@ -5,6 +5,7 @@ import App from './App'
 
 import createRouter from './router/router'
 import store from './store'
+import state from './store/state.js'
 
 // 解决移动端点击 300ms 的问题
 import fastclick from 'fastclick'
@@ -37,5 +38,6 @@ new Vue({
   el: '#app',
   router,
   store,
+  data: state,
   render: h => h(App)
 })

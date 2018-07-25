@@ -72,6 +72,7 @@
       }
     },
     created() {
+      console.log('play.state', this.$root.$data)
       this._getDetail()
     },
     mounted() {

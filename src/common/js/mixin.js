@@ -26,6 +26,10 @@ export const playlistMixin = {
   }
 }
 
+export const planlistMixin = {
+
+}
+
 export const playerMixin = {
   computed: {
     iconMode() {

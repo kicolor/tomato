@@ -5,7 +5,7 @@
       <span :style="completeTextStyle">{{completePomodoro}}/{{totalPomodoro}}</span>
     </div> -->
     <div class="plan-desc">
-      <span>任务详情</span>
+      <span>{{desc}}</span>
     </div>
     <div class="radial-progress-container" :style="containerStyle">
       <div class="radial-progress-inner" :style="innerCircleStyle" @mouseenter='toggleBtnShow(true)' @mouseleave='toggleBtnShow(false)'>
@@ -79,6 +79,11 @@
 export default {
   name: 'Pomodoro',
   props: {
+    desc: {
+      type: String,
+      required: false,
+      default: '任务详情'
+    },
     diameter: {
       type: Number,
       required: false,
