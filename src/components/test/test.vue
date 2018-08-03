@@ -47,7 +47,6 @@
     position: fixed
     width: 100%
     top: 176px
-    bottom: 0
     .statistic
       height: 100%
       overflow: hidden

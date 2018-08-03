@@ -23,6 +23,10 @@ export const selectPlay = function ({commit, state}, {list, index}) {
   commit(types.SET_PLAYING_STATE, true)
 }
 
+export const startPlan = function ({commit, state}, {list, index}) {
+
+}
+
 export const randomPlay = function ({commit}, {list}) {
   commit(types.SET_PLAY_MODE, playMode.random)
   commit(types.SET_SEQUENCE_LIST, list)
@@ -75,6 +79,10 @@ export const insertSong = function ({commit, state}, song) {
   commit(types.SET_CURRENT_INDEX, currentIndex)
   commit(types.SET_FULL_SCREEN, true)
   commit(types.SET_PLAYING_STATE, true)
+}
+
+export const insertTomato = function ({commit, state}, tomato) {
+
 }
 
 export const saveSearchHistory = function ({commit}, query) {

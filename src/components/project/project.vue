@@ -50,6 +50,9 @@
     // created() {
     //   this._getProjectList()
     // },
+    mounted() {
+      console.log('project', this.$root)
+    },
     data() {
       return {
         desc: '',
@@ -59,7 +62,8 @@
           interactive: true
         },
         placeholder: '添加项目',
-        projectList: []
+        projectList: [],
+        playing: true
       }
     },
     methods: {
@@ -145,7 +149,6 @@
     position: fixed
     width: 100%
     top: 176px
-    bottom: 0
     display: flex
     flex-direction: column
     align-items: center

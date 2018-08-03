@@ -105,6 +105,7 @@
         addPlanToMatter(_taskId, plan).then(res => {
           if (res.code === ERR_OK) {
             this.closeDialog()
+            console.log('addPlanToMatter', res.data)
           }
         })
       },

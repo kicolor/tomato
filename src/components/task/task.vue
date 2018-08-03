@@ -115,7 +115,6 @@
   .task
     position: fixed
     top: 176px
-    bottom: 0
     width: 100%
     .loading-container
       position: absolute

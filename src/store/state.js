@@ -6,7 +6,6 @@ const state = {
   playing: false,
   fullScreen: false,
   playlist: [],
-  sequenceList: [],
   mode: playMode.sequence,
   currentIndex: -1,
   disc: {},
@@ -16,7 +15,7 @@ const state = {
   favoriteList: loadFavorite(),
   test: 'test store of state',
   planList: [],
-  tomato: {}
+  tomatoList: []
 }
 
 export default state

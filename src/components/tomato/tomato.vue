@@ -4,7 +4,7 @@
       <span :style="titleStyle">Complete:</span>
       <span :style="completeTextStyle">{{completePomodoro}}/{{totalPomodoro}}</span>
     </div> -->
-    <div class="plan-desc">
+    <div class="plan-desc" v-show="!mini">
       <span>{{desc}}</span>
     </div>
     <div class="radial-progress-container" :style="containerStyle">
@@ -79,6 +79,11 @@
 export default {
   name: 'Pomodoro',
   props: {
+    mini: {
+      type: Boolean,
+      required: true,
+      default: true
+    },
     desc: {
       type: String,
       required: false,
@@ -87,7 +92,7 @@ export default {
     diameter: {
       type: Number,
       required: false,
-      default: 300
+      default: 100
     },
     totalPomodoro: {
       type: Number,

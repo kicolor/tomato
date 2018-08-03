@@ -57,7 +57,8 @@
         allMatter: [],
         today: true,
         hasPlan: true,
-        type: 1
+        type: 1,
+        playing: true
       }
     },
     created() {
@@ -96,6 +97,7 @@
             if (res.data.length > 0) {
               // this.hasPlan = true
               this.allMatter = res.data
+              console.log('getPlanList', res.data)
               this.planList = this._normalizePlan(res.data)
             } else {
               this.hasPlan = false
@@ -128,6 +130,7 @@
             temp.push(item)
           })
         })
+        console.log('planlist-temp', temp)
         if (temp.length > 0) {
           this.hasPlan = true
           temp.forEach((item) => {
@@ -144,7 +147,7 @@
           this.hasPlan = false
         }
         let arr = [over, today, complete]
-        console.log('arr', arr)
+        console.log('planlist-arr', arr)
         return arr
       },
       _isOver(str) {
@@ -177,7 +180,6 @@
     position: fixed
     width: 100%
     top: 176px
-    bottom: 0
     .calendar
       display: flex
       justify-content: center

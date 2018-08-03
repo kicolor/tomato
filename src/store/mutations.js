@@ -36,6 +36,12 @@ const matutaions = {
   },
   [types.SET_FAVORITE_LIST](state, list) {
     state.favoriteList = list
+  },
+  [types.SET_PLAN_LIST](state, list) {
+    state.planList = list
+  },
+  [types.SET_TOMATO_LIST](state, list) {
+    state.tomatoList = list
   }
 }
 
