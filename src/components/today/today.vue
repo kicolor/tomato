@@ -127,10 +127,10 @@
               proName: group.proName
             }
             item = Object.assign({}, item, target)
-            temp.push(item)
+            let index = this._getIndexOfSortArr(temp, item)
+            temp.splice(index, 0, item)
           })
         })
-        console.log('planlist-temp', temp)
         if (temp.length > 0) {
           this.hasPlan = true
           temp.forEach((item) => {
@@ -156,6 +156,14 @@
           return false
         } else {
           return true
+        }
+      },
+      _getIndexOfSortArr(arr, i) {
+        let index = arr.findIndex(item => item.updateAt > i.updateAt)
+        if (index === -1) {
+          return arr.length
+        } else {
+          return index
         }
       },
       ...mapMutations({
