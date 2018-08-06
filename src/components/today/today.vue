@@ -37,6 +37,7 @@
   import {playlistMixin} from 'common/js/mixin'
   import {ERR_OK} from 'api/config'
   import {mapMutations} from 'vuex'
+  // import { loadPlanList } from 'common/js/cache'
 
   export default {
     mixins: [playlistMixin],
@@ -98,13 +99,30 @@
               // this.hasPlan = true
               this.allMatter = res.data
               console.log('getPlanList', res.data)
-              this.planList = this._normalizePlan(res.data)
+              let list = this._sortPlanList(res.data)
+              // *** mutations: list => planList
+              this.planList = this._normalizePlan(list)
             } else {
               this.hasPlan = false
             }
             this.loading = false
           }
         })
+      },
+      _sortPlanList(list) {
+        let temp = []
+        list.map(group => {
+          group.plan.map(item => {
+            let target = {
+              desc: group.desc,
+              proName: group.proName
+            }
+            item = Object.assign({}, item, target)
+            let index = this._getIndexOfSortArr(temp, item)
+            temp.splice(index, 0, item)
+          })
+        })
+        return temp
       },
       _normalizePlan(list) {
         let today = {
@@ -119,18 +137,19 @@
           title: '已完成',
           items: []
         }
-        let temp = []
-        list.map(group => {
-          group.plan.map(item => {
-            let target = {
-              desc: group.desc,
-              proName: group.proName
-            }
-            item = Object.assign({}, item, target)
-            let index = this._getIndexOfSortArr(temp, item)
-            temp.splice(index, 0, item)
-          })
-        })
+        // let temp = []
+        // list.map(group => {
+        //   group.plan.map(item => {
+        //     let target = {
+        //       desc: group.desc,
+        //       proName: group.proName
+        //     }
+        //     item = Object.assign({}, item, target)
+        //     let index = this._getIndexOfSortArr(temp, item)
+        //     temp.splice(index, 0, item)
+        //   })
+        // })
+        let temp = list
         if (temp.length > 0) {
           this.hasPlan = true
           temp.forEach((item) => {

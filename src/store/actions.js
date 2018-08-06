@@ -81,7 +81,7 @@ export const insertSong = function ({commit, state}, song) {
   commit(types.SET_PLAYING_STATE, true)
 }
 
-export const insertTomato = function ({commit, state}, tomato) {
+export const insertPlan = function ({commit, state}, plan) {
 
 }
 

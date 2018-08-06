@@ -24,4 +24,4 @@ export const SET_FAVORITE_LIST = 'SET_FAVORITE_LIST'
 
 export const SET_PLAN_LIST = 'SET_PLAN_LIST'
 
-export const SET_TOMATO_LIST = 'SET_TOMATO_LIST'
+// export const SET_TOMATO_LIST = 'SET_TOMATO_LIST'

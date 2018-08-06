@@ -28,8 +28,22 @@ export const favoriteList = state => state.favoriteList
 
 export const planList = state => state.planList
 
-export const toamtoList = state => state.toamtoList
+// export const toamtoList = state => state.toamtoList
 
-export const currentPlan = (state) => {
-  return state.sequenceList[state.currentIndex] || {}
+export const tomatoList = (state) => {
+	let restTomato = {
+		desc: '休息'
+	}
+	let temp = []
+	state.planList.map(item => {
+		for (let i=0; i<item.predict; i++) {
+			temp.push(item)
+			temp.push(restTomato)
+		}
+	})
+	return temp
+}
+
+export const currentTomato = (state) => {
+	return state.tomatoList[state.currentIndex] || {}
 }

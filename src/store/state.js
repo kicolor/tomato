@@ -13,9 +13,8 @@ const state = {
   searchHistory: loadSearch(),
   playHistory: loadPlay(),
   favoriteList: loadFavorite(),
-  test: 'test store of state',
-  planList: [],
-  tomatoList: []
+  planList: []
+  // tomatoList: []
 }
 
 export default state
