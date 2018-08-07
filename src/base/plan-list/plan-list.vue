@@ -19,6 +19,7 @@
   import PlanItem from 'base/plan-item/plan-item'
   import { ERR_OK } from 'api/config'
   import { updatePlan } from 'api/plan'
+  import {mapActions} from 'vuex'
 
   export default {
     created() {
@@ -48,24 +49,27 @@
         }
         updatePlan(_id, updateData).then(res => {
           if (res.code === ERR_OK) {
-            let list = this._updatePlan(res.data)
-            this.$emit('update:planList', list)
+            this.modifyPlan(res.data)
+            // let list = this._updatePlan(res.data)
+            // this.$emit('update:planList', list)
           }
         })
       },
       startPlan(plan) {
-        if (plan.id) {
-          this.$router.push({
-            name: 'play',
-            params: {
-              id: plan.id
-            }
-          })
-        } else {
-          this.$router.push({
-            path: '/plan'
-          })
-        }
+        // if (plan.id) {
+        //   this.selectPlan(plan)
+        //   this.$router.push({
+        //     name: 'play'
+        //     // params: {
+        //     //   id: plan.id
+        //     // }
+        //   })
+        // } else {
+        //   this.$router.push({
+        //     path: '/today'
+        //   })
+        // }
+        this.selectPlan(plan)
       },
       selectPlan(plan) {
         if (plan.id) {
@@ -145,7 +149,11 @@
           height += item.clientHeight
           this.listHeight.push(height)
         }
-      }
+      },
+      ...mapActions([
+        'selectPlan',
+        'modifyPlan'
+      ])
     },
     watch: {
       planList() {

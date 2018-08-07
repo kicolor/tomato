@@ -4,7 +4,7 @@
       <span :style="titleStyle">Complete:</span>
       <span :style="completeTextStyle">{{completePomodoro}}/{{totalPomodoro}}</span>
     </div> -->
-    <div class="plan-desc" v-show="!mini">
+    <div class="plan-desc" v-show="fullScreen">
       <span>{{desc}}</span>
     </div>
     <div class="radial-progress-container" :style="containerStyle">
@@ -76,14 +76,11 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+
 export default {
   name: 'Pomodoro',
   props: {
-    mini: {
-      type: Boolean,
-      required: true,
-      default: true
-    },
     desc: {
       type: String,
       required: false,
@@ -135,7 +132,6 @@ export default {
       default: '#0099CC'
     }
   },
-
   data () {
     return {
       gradient: {
@@ -195,7 +191,6 @@ export default {
         transition: `stroke-dashoffset 1000ms linear`
       }
     },
-
     strokeStyle () {
       return {
         height: `${this.diameter}px`,
@@ -203,7 +198,6 @@ export default {
         strokeWidth: `${this.strokeWidth}px`
       }
     },
-
     innerCircleStyle () {
       return {
         width: `${this.innerCircleDiameter}px`,
@@ -232,7 +226,10 @@ export default {
       return {
         color: `${this.innerTextColor}`
       }
-    }
+    },
+    ...mapGetters([
+      'fullScreen'
+    ])
   },
 
   methods: {
@@ -334,7 +331,7 @@ export default {
   @import "~common/stylus/variable"
   .plan-desc
     color: $color-theme-d
-    font-size: $font-size-medium-x
+    font-size: $font-size-large
   .pomodoro-main
     text-align: center
     .radial-progress-container

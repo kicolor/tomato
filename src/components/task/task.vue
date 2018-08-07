@@ -1,6 +1,6 @@
 <template>
   <div class="task" ref="task">
-    <task-list v-show="hasTask" ref="list" :task-list.sync="taskList" :has-task.sync="hasTask" />
+    <task-list v-show="hasTask" ref="list" :task-list="sequenceTaskList" :has-task.sync="hasTask" />
     <tips v-show="!hasTask" :typs="type"></tips>
     <div v-show="loading" class="loading-container">
       <loading></loading>
@@ -15,24 +15,36 @@
   import {ERR_OK} from 'api/config'
   import TaskList from 'base/task-list/task-list'
   import { getAllMatter } from 'api/matter'
+  import {mapGetters, mapMutations} from 'vuex'
 
   export default {
-    beforeRouteEnter (to, from, next) {
-      next(vm => {
-        vm._getTaskList()
-      })
-    },
-    beforeRouteUpdate (to, from, next) {
+    // beforeRouteEnter (to, from, next) {
+    //   next(vm => {
+    //     vm._getTaskList()
+    //   })
+    // },
+    // beforeRouteUpdate (to, from, next) {
+    //   this._getTaskList()
+    //   next()
+    // },
+    created() {
       this._getTaskList()
-      next()
     },
     data() {
       return {
-        taskList: [],
+        // taskList: [],
         loading: true,
         hasTask: true,
         type: 0
       }
+    },
+    computed: {
+      sequenceTaskList() {
+        return this._normalizeTask(this.taskList)
+      },
+      ...mapGetters([
+        'taskList'
+      ])
     },
     methods: {
       newTask() {
@@ -54,12 +66,11 @@
         this.$refs.list.refresh()
       },
       _getTaskList() {
-        getAllMatter({where: {state: true, archive: false}}).then((res) => {
+        getAllMatter({where: {state: true, archive: false}, order: ['key ASC']}).then((res) => {
           if (res.code === ERR_OK) {
             if (res.data.length > 0) {
-              console.log('getAllMatter', res.data)
               this.hasTask = true
-              this.taskList = this._normalizeTask(res.data)
+              this.setTaskList(res.data)
             } else {
               this.hasTask = false
             }
@@ -96,9 +107,11 @@
         if (order) {
           orderList.push(order)
         }
-        console.log('_normalizePlan', orderList)
         return orderList
-      }
+      },
+      ...mapMutations({
+        setTaskList: 'SET_TASK_LIST'
+      })
     },
     components: {
       Loading,

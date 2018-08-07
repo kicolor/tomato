@@ -45,6 +45,7 @@
   import { ERR_OK } from 'api/config'
   import { addPlanToMatter, batchUpdateMatter, deleteMatter } from 'api/matter'
   import { popupTips } from 'common/js/util'
+  import {mapActions} from 'vuex'
 
   const TITLE_HEIGHT = 30
   const ANCHOR_HEIGHT = 18
@@ -104,8 +105,13 @@
         }
         addPlanToMatter(_taskId, plan).then(res => {
           if (res.code === ERR_OK) {
+            let target = {
+              desc: task.desc,
+              proName: task.proName
+            }
+            target = Object.assign({}, res.data, target)
+            this.insertPlan(target)
             this.closeDialog()
-            console.log('addPlanToMatter', res.data)
           }
         })
       },
@@ -130,9 +136,10 @@
         }
         batchUpdateMatter(_id, updateData).then(res => {
           if (res.code === ERR_OK) {
-            let list = this._updateList(this.taskList, _id)
-            popupTips(this, 'success', `${plan.desc}已归档`, 1000, 'bottom')
-            this.$emit('update:taskList', list)
+            console.log('batchUpdateMatter', res.data)
+            // let list = this._updateList(this.taskList, _id)
+            // popupTips(this, 'success', `${plan.desc}已归档`, 1000, 'bottom')
+            // this.$emit('update:taskList', list)
           } else {
           }
         })
@@ -224,7 +231,10 @@
         }
         this.scrollY = -this.listHeight[index]
         this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
-      }
+      },
+      ...mapActions([
+        'insertPlan'
+      ])
     },
     watch: {
       taskList() {

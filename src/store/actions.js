@@ -3,9 +3,9 @@ import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
 import {saveSearch, clearSearch, deleteSearch, savePlay, saveFavorite, deleteFavorite} from 'common/js/cache'
 
-function findIndex(list, song) {
+function findIndex(list, target) {
   return list.findIndex((item) => {
-    return item.id === song.id
+    return item.id === target.id
   })
 }
 
@@ -23,8 +23,15 @@ export const selectPlay = function ({commit, state}, {list, index}) {
   commit(types.SET_PLAYING_STATE, true)
 }
 
-export const startPlan = function ({commit, state}, {list, index}) {
-
+export const selectPlan = function ({commit, state}, plan) {
+  let restTomato = {
+    desc: '休息'
+  }
+  let tomatoList = Array.of(plan, restTomato)
+  commit(types.SET_TOMATO_LIST, tomatoList)
+  commit(types.SET_CURRENT_INDEX, 0)
+  commit(types.SET_PLAY_MODE, playMode.playing)
+  commit(types.SET_FULL_SCREEN, true)
 }
 
 export const randomPlay = function ({commit}, {list}) {
@@ -82,6 +89,32 @@ export const insertSong = function ({commit, state}, song) {
 }
 
 export const insertPlan = function ({commit, state}, plan) {
+  let planList = state.planList.slice()
+  planList.push(plan)
+  commit(types.SET_PLAN_LIST, planList)
+}
+
+export const modifyPlan = function ({commit, state}, plan) {
+  let planList = state.planList.slice()
+  let index = findIndex(planList, plan)
+  plan = Object.assign({}, planList[index], plan)
+  planList.splice(index, 1, plan)
+  commit(types.SET_PLAN_LIST, planList)
+}
+
+export const deletePlan = function ({commit, state}, plan) {
+
+}
+
+export const insertTask = function ({commit, state}, task) {
+
+}
+
+export const modifyTask = function ({commit, state}, task) {
+
+}
+
+export const deleteTask = function ({commit, state}, task) {
 
 }
 

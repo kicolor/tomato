@@ -5,7 +5,7 @@
     <keep-alive>
       <router-view :class="miniPlayCls"></router-view>
     </keep-alive>
-    <play ref="play"></play>
+    <play></play>
   </div>
 </template>
 
@@ -13,17 +13,17 @@
   import MHeader from 'components/m-header/m-header'
   import Tab from 'components/tab/tab'
   import Play from 'components/play/play'
+  import {mapGetters} from 'vuex'
 
   export default {
-    data() {
-      return {
-        playing: true
-      }
-    },
     computed: {
       miniPlayCls() {
-        return this.playing ? 'mini-play' : 'normal-play'
-      }
+        return this.mode && !this.fullScreen ? 'mini-play' : 'normal-play'
+      },
+      ...mapGetters([
+        'mode',
+        'fullScreen'
+      ])
     },
     components: {
       MHeader,

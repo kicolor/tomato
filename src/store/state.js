@@ -6,15 +6,16 @@ const state = {
   playing: false,
   fullScreen: false,
   playlist: [],
-  mode: playMode.sequence,
+  mode: playMode.clear,
   currentIndex: -1,
   disc: {},
   topList: {},
   searchHistory: loadSearch(),
   playHistory: loadPlay(),
   favoriteList: loadFavorite(),
-  planList: []
-  // tomatoList: []
+  taskList: [],
+  planList: [],
+  tomatoList: []
 }
 
 export default state

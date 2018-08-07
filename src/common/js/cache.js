@@ -1,6 +1,4 @@
 import storage from 'good-storage'
-import { ERR_OK } from 'api/config'
-import { getAllMatter } from 'api/matter'
 
 const SEARCH_KEY = '__search__'
 const SEARCH_MAX_LEN = 15

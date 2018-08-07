@@ -1,5 +1,5 @@
 <template>
-  <div class="play" v-show="play">
+  <div class="play" v-if="tomatoList.length > 0">
     <transition name="slide">
       <div class="normal-play" v-show="fullScreen">
         <div class="back" @click="back">
@@ -16,7 +16,7 @@
                     :inner-text-color = "innerTextColor"
                     :stroke-width = "strokeWidth"
                     :inner-stroke-color = "innerStrokeColor"
-                    :mini="false"
+                    :desc="currentTomato.desc"
                     class="tomato">
             </Tomato>
             <div class="play-disc">
@@ -43,19 +43,18 @@
           <Tomato :total-pomodoro = "totalPomodoro"
                   :work-duration = "workDuration"
                   :rest-duration = "restDuration"
-                  :diameter = "miniDiameter"
+                  :diameter = "diameter"
                   :start-color = "startColor"
                   :stop-color = "stopColor"
                   :inner-text-color = "innerTextColor"
                   :stroke-width = "miniStrokeWidth"
                   :inner-stroke-color = "innerStrokeColor"
-                  :mini="true"
                   class="mini-tomato">
           </Tomato>
         </div>
         <div class="text">
-          <h2 class="name" v-html="currentPlan.desc"></h2>
-          <p class="desc" v-html="currentPlan.proName"></p>
+          <h2 class="name" v-html="currentTomato.desc"></h2>
+          <p class="desc" v-html="currentTomato.proName"></p>
         </div>
         <div class="control">
           <progress-circle :radius="radius" :percent="percent">
@@ -77,7 +76,7 @@
   import ProgressBar from 'base/progress-bar/progress-bar'
   import ProgressCircle from 'base/progress-circle/progress-circle'
   import {createSong} from 'common/js/song'
-  import {mapGetters} from 'vuex'
+  import {mapGetters, mapMutations} from 'vuex'
 
   export default {
     computed: {
@@ -96,14 +95,27 @@
       percent() {
         // return this.currentTime / this.currentSong.duration
       },
+      diameter() {
+        if (this.fullScreen) {
+          return 300
+          // return this.$refs.content.clientWidth * 0.8
+        } else {
+          return 60
+          // return this.$refs.icon.clientHeight * 0.8
+        }
+      },
       ...mapGetters([
-        'singer'
+        'playing',
+        'fullScreen',
+        'singer',
+        'tomatoList',
+        'currentTomato'
       ])
     },
     data() {
       return {
-        play: true,
-        fullScreen: false,
+        // play: true,
+        // fullScreen: false,
         radius: 32,
         totalPomodoro: 4,
         workDuration: 25,
@@ -113,23 +125,23 @@
         strokeWidth: 10,
         miniStrokeWidth: 4,
         innerStrokeColor: '#C09C7C',
-        innerTextColor: '#FF6666',
-        diameter: 300,
-        miniDiameter: 60,
-        currentPlan: {
-          desc: 'plan-name',
-          proName: 'project-name'
-        }
+        innerTextColor: '#FF6666'
+        // diameter: 300,
+        // miniDiameter: 60
+        // currentTomato: {
+        //   desc: 'plan-name',
+        //   proName: 'project-name'
+        // }
       }
     },
     created() {
-      console.log('play.state', this.$root.$data)
+      // console.log('play.state', this.$root.$data)
       this._getDetail()
     },
     mounted() {
-      this.diameter = this.$refs.content.clientWidth * 0.8
-      this.miniDiameter = this.$refs.icon.clientHeight * 0.8
-      console.log('this.miniDiameter', this.miniDiameter)
+      // this.diameter = this.$refs.content.clientWidth * 0.8
+      // this.miniDiameter = this.$refs.icon.clientHeight * 0.8
+      // console.log('this.miniDiameter', this.miniDiameter)
     },
     methods: {
       _getDetail() {
@@ -145,7 +157,8 @@
         return ret
       },
       back() {
-        this.$router.back()
+        // this.$router.back()
+        this.setFullScreen(false)
       },
       open() {
 
@@ -154,8 +167,11 @@
 
       },
       showPlaylist () {
-
-      }
+        console.log('tomatoList', this.tomatoList)
+      },
+      ...mapMutations({
+        setFullScreen: 'SET_FULL_SCREEN'
+      })
     },
     components: {
       Scroll,
@@ -173,6 +189,11 @@
     transition: all .5s
   .slide-enter, .slide-leave-to
     transform: translate3d(-100%, 0, 0)
+
+  .mini-enter-acive, .mini-leave-active
+    transition: all .4s
+  .mini-enter, .mini-leave-to
+    opacity: 0
 
   .play
     .normal-play

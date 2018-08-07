@@ -12,7 +12,7 @@
           </slider>
         </div>
         <div v-show="hasPlan" class="plan-list">
-            <plan-list ref="list" :plan-list.sync="planList" :all-matter="allMatter"/>
+            <plan-list ref="list" :plan-list="sequencePlanList" :all-matter="allMatter"/>
         </div>
       </div>
       <tips v-show="!hasPlan" :type="type" class="tips"></tips>
@@ -36,35 +36,44 @@
   import { getDayStr } from 'common/js/util'
   import {playlistMixin} from 'common/js/mixin'
   import {ERR_OK} from 'api/config'
-  import {mapMutations} from 'vuex'
+  import {mapGetters, mapMutations} from 'vuex'
   // import { loadPlanList } from 'common/js/cache'
 
   export default {
     mixins: [playlistMixin],
-    beforeRouteEnter (to, from, next) {
-      next(vm => {
-        vm._getPlanList()
-      })
-    },
-    beforeRouteUpdate (to, from, next) {
-      this._getPlanList()
-      next()
-    },
+    // beforeRouteEnter (to, from, next) {
+    //   next(vm => {
+    //     vm._getPlanList()
+    //   })
+    // },
+    // beforeRouteUpdate (to, from, next) {
+    //   this._getPlanList()
+    //   next()
+    // },
     data() {
       return {
         recommends: [],
         discList: [],
-        planList: [],
+        // sequencePlanList: [],
         allMatter: [],
         today: true,
         hasPlan: true,
-        type: 1,
-        playing: true
+        type: 1
       }
+    },
+    computed: {
+      sequencePlanList() {
+        console.log('sequencePlanList')
+        return this._normalizePlan(this.planList)
+      },
+      ...mapGetters([
+        'planList'
+      ])
     },
     created() {
       this._getRecommend()
       this._getDiscList()
+      this._getPlanList()
     },
     methods: {
       handlePlaylist(playlist) {
@@ -98,16 +107,46 @@
             if (res.data.length > 0) {
               // this.hasPlan = true
               this.allMatter = res.data
-              console.log('getPlanList', res.data)
               let list = this._sortPlanList(res.data)
-              // *** mutations: list => planList
-              this.planList = this._normalizePlan(list)
+              this.setPlanList(list)
+              // this.sequencePlanList = this._normalizePlan(list)
             } else {
               this.hasPlan = false
             }
             this.loading = false
           }
         })
+      },
+      _normalizePlan(list) {
+        let today = {
+          title: '今日计划',
+          items: []
+        }
+        let over = {
+          title: '逾期计划',
+          items: []
+        }
+        let complete = {
+          title: '已完成',
+          items: []
+        }
+        if (list.length > 0) {
+          this.hasPlan = true
+          list.forEach((item) => {
+            if (this._isOver(item.updatedAt)) {
+              over.items.push(item)
+            } else {
+              today.items.push(item)
+            }
+            if (item.complete) {
+              complete.items.push(item)
+            }
+          })
+        } else {
+          this.hasPlan = false
+        }
+        let arr = [over, today, complete]
+        return arr
       },
       _sortPlanList(list) {
         let temp = []
@@ -124,50 +163,13 @@
         })
         return temp
       },
-      _normalizePlan(list) {
-        let today = {
-          title: '今日计划',
-          items: []
-        }
-        let over = {
-          title: '逾期计划',
-          items: []
-        }
-        let complete = {
-          title: '已完成',
-          items: []
-        }
-        // let temp = []
-        // list.map(group => {
-        //   group.plan.map(item => {
-        //     let target = {
-        //       desc: group.desc,
-        //       proName: group.proName
-        //     }
-        //     item = Object.assign({}, item, target)
-        //     let index = this._getIndexOfSortArr(temp, item)
-        //     temp.splice(index, 0, item)
-        //   })
-        // })
-        let temp = list
-        if (temp.length > 0) {
-          this.hasPlan = true
-          temp.forEach((item) => {
-            if (this._isOver(item.updatedAt)) {
-              over.items.push(item)
-            } else {
-              today.items.push(item)
-            }
-            if (item.complete) {
-              complete.items.push(item)
-            }
-          })
+      _getIndexOfSortArr(arr, i) {
+        let index = arr.findIndex(item => item.updatedAt > i.updatedAt)
+        if (index === -1) {
+          return arr.length
         } else {
-          this.hasPlan = false
+          return index
         }
-        let arr = [over, today, complete]
-        console.log('planlist-arr', arr)
-        return arr
       },
       _isOver(str) {
         let day = getDayStr()
@@ -177,16 +179,9 @@
           return true
         }
       },
-      _getIndexOfSortArr(arr, i) {
-        let index = arr.findIndex(item => item.updateAt > i.updateAt)
-        if (index === -1) {
-          return arr.length
-        } else {
-          return index
-        }
-      },
       ...mapMutations({
-        setDisc: 'SET_DISC'
+        setDisc: 'SET_DISC',
+        setPlanList: 'SET_PLAN_LIST'
       })
     },
     components: {

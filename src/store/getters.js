@@ -26,24 +26,28 @@ export const playHistory = state => state.playHistory
 
 export const favoriteList = state => state.favoriteList
 
+export const taskList = state => state.taskList
+
 export const planList = state => state.planList
 
 // export const toamtoList = state => state.toamtoList
 
-export const tomatoList = (state) => {
-	let restTomato = {
-		desc: '休息'
-	}
-	let temp = []
-	state.planList.map(item => {
-		for (let i=0; i<item.predict; i++) {
-			temp.push(item)
-			temp.push(restTomato)
-		}
-	})
-	return temp
-}
+// export const tomatoList = (state) => {
+//   let restTomato = {
+//     desc: '休息'
+//   }
+//   let temp = []
+//   state.planList.map(item => {
+//     for (let i = 0; i < item.predict; i++) {
+//       temp.push(item)
+//       temp.push(restTomato)
+//     }
+//   })
+//   return temp
+// }
+
+export const tomatoList = state => state.tomatoList
 
 export const currentTomato = (state) => {
-	return state.tomatoList[state.currentIndex] || {}
+  return state.tomatoList[state.currentIndex] || {}
 }

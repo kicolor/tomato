@@ -103,7 +103,7 @@ export default [
         props: true
       },
       {
-        name: 'play',
+        // name: 'play',
         path: 'play',
         component: Play,
         props: true
@@ -180,6 +180,7 @@ export default [
     component: Test
   },
   {
+    name: 'play',
     path: '/play',
     component: Play
   },
