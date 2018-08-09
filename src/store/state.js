@@ -13,9 +13,11 @@ const state = {
   searchHistory: loadSearch(),
   playHistory: loadPlay(),
   favoriteList: loadFavorite(),
+  loadMatter: false,
   taskList: [],
-  planList: [],
-  tomatoList: []
+  // planList: [],
+  tomatoList: [],
+  projectList: []
 }
 
 export default state

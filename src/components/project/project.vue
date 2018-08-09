@@ -35,18 +35,19 @@
   import SearchBox from 'base/search-box/search-box'
   import { Icon } from 'vux'
   import { ERR_OK } from 'api/config'
-  import { getAllPro, addPro } from 'api/project'
+  import { addPro, getAllPro } from 'api/project'
+  import {mapGetters, mapActions} from 'vuex'
 
   export default {
-    beforeRouteEnter(to, from, next) {
-      next(vm => {
-        vm._getProjectList()
-      })
-    },
-    beforeRouteUpdate(to, from, next) {
-      this._getProjectList()
-      next()
-    },
+    // beforeRouteEnter(to, from, next) {
+    //   next(vm => {
+    //     vm._getProjectList()
+    //   })
+    // },
+    // beforeRouteUpdate(to, from, next) {
+    //   this._getProjectList()
+    //   next()
+    // },
     // created() {
     //   this._getProjectList()
     // },
@@ -61,10 +62,14 @@
           fade: false,
           interactive: true
         },
-        placeholder: '添加项目',
-        projectList: [],
-        playing: true
+        placeholder: '添加项目'
+        // projectList: []
       }
+    },
+    computed: {
+      ...mapGetters([
+        'projectList'
+      ])
     },
     methods: {
       addProject() {
@@ -77,7 +82,8 @@
           if (res.code === ERR_OK) {
             let pro = res.data
             pro.matter = []
-            this.projectList.unshift(pro)
+            // this.projectList.unshift(pro)
+            this.insertProject(pro)
             this.desc = ''
           }
         })
@@ -123,7 +129,10 @@
           orderList.push(val)
         }
         return orderList
-      }
+      },
+      ...mapActions([
+        'insertProject'
+      ])
     },
     watch: {
       topList() {

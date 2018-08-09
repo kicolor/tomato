@@ -9,6 +9,30 @@ function findIndex(list, target) {
   })
 }
 
+function findIndexOfId(list, targetId) {
+  return list.findIndex((item) => {
+    return item.id === targetId
+  })
+}
+
+function deepCopy(o) {
+  if (o instanceof Array) {
+    let n = []
+    for (let i = 0; i < o.length; ++i) {
+      n[i] = deepCopy(o[i])
+    }
+    return n
+  } else if (o instanceof Object) {
+    let n = {}
+    for (let i in o) {
+      n[i] = deepCopy(o[i])
+    }
+    return n
+  } else {
+    return o
+  }
+}
+
 export const selectPlay = function ({commit, state}, {list, index}) {
   commit(types.SET_SEQUENCE_LIST, list)
   if (state.mode === playMode.random) {
@@ -88,34 +112,70 @@ export const insertSong = function ({commit, state}, song) {
   commit(types.SET_PLAYING_STATE, true)
 }
 
+// export const insertPlan = function ({commit, state}, plan) {
+//   let planList = state.planList.slice()
+//   planList.push(plan)
+//   commit(types.SET_PLAN_LIST, planList)
+// }
+
 export const insertPlan = function ({commit, state}, plan) {
-  let planList = state.planList.slice()
+  let taskList = deepCopy(state.taskList)
+  let taskIndex = findIndexOfId(taskList, plan.matter)
+  let planList = taskList[taskIndex].plan
   planList.push(plan)
-  commit(types.SET_PLAN_LIST, planList)
+  commit(types.SET_TASK_LIST, taskList)
 }
 
+// export const modifyPlan = function ({commit, state}, plan) {
+//   let planList = state.planList.slice()
+//   let index = findIndex(planList, plan)
+//   plan = Object.assign({}, planList[index], plan)
+//   planList.splice(index, 1, plan)
+//   commit(types.SET_PLAN_LIST, planList)
+// }
+
 export const modifyPlan = function ({commit, state}, plan) {
-  let planList = state.planList.slice()
-  let index = findIndex(planList, plan)
-  plan = Object.assign({}, planList[index], plan)
-  planList.splice(index, 1, plan)
-  commit(types.SET_PLAN_LIST, planList)
+  let taskList = deepCopy(state.taskList)
+  let taskIndex = findIndexOfId(taskList, plan.matter)
+  let planList = taskList[taskIndex].plan
+  let planIndex = findIndexOfId(planList, plan.id)
+  planList.splice(planIndex, 1, plan)
+  commit(types.SET_TASK_LIST, taskList)
 }
 
 export const deletePlan = function ({commit, state}, plan) {
 
 }
 
-export const insertTask = function ({commit, state}, task) {
+export const inactivateTask = function ({commit, state}, taskId) {
+  let taskList = state.taskList.slice()
+  let index = findIndexOfId(taskList, taskId)
+  taskList.splice(index, 1)
+  commit(types.SET_TASK_LIST, taskList)
+}
 
+export const insertTask = function ({commit, state}, task) {
+  let taskList = state.taskList.slice()
+  taskList.push(task)
+  commit(types.SET_TASK_LIST, taskList)
 }
 
 export const modifyTask = function ({commit, state}, task) {
-
+  let taskList = state.taskList.slice()
+  let index = findIndex(taskList, task)
+  task = Object.assign({}, taskList[index], task)
+  taskList.splice(index, 1, task)
+  commit(types.SET_TASK_LIST, taskList)
 }
 
 export const deleteTask = function ({commit, state}, task) {
 
+}
+
+export const insertProject = function ({commit, state}, project) {
+  let projectList = state.projectList.slice()
+  projectList.unshift(project)
+  commit(types.SET_PROJECT_LIST, projectList)
 }
 
 export const saveSearchHistory = function ({commit}, query) {

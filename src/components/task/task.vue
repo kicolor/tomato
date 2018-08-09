@@ -1,8 +1,8 @@
 <template>
   <div class="task" ref="task">
-    <task-list v-show="hasTask" ref="list" :task-list="sequenceTaskList" :has-task.sync="hasTask" />
-    <tips v-show="!hasTask" :typs="type"></tips>
-    <div v-show="loading" class="loading-container">
+    <task-list v-show="taskList.length" ref="list" :task-list="sequenceTaskList" />
+    <tips v-show="loadMatter && !taskList.length" :typs="type"></tips>
+    <div v-show="!loadMatter" class="loading-container">
       <loading></loading>
     </div>
     <router-view></router-view>
@@ -28,13 +28,13 @@
     //   next()
     // },
     created() {
-      this._getTaskList()
+      // this._getTaskList()
     },
     data() {
       return {
         // taskList: [],
-        loading: true,
-        hasTask: true,
+        // loading: true,
+        // hasTask: true,
         type: 0
       }
     },
@@ -43,7 +43,9 @@
         return this._normalizeTask(this.taskList)
       },
       ...mapGetters([
-        'taskList'
+        'loadMatter',
+        'taskList',
+        'loadTaskList'
       ])
     },
     methods: {
@@ -69,10 +71,10 @@
         getAllMatter({where: {state: true, archive: false}, order: ['key ASC']}).then((res) => {
           if (res.code === ERR_OK) {
             if (res.data.length > 0) {
-              this.hasTask = true
+              // this.hasTask = true
               this.setTaskList(res.data)
             } else {
-              this.hasTask = false
+              // this.hasTask = false
             }
             this.loading = false
           }
@@ -88,7 +90,8 @@
               items: []
             }
           }
-          map[key].items.push(item)
+          let {...target} = item
+          map[key].items.push(target)
         })
         // 处理 map，得到有序列表
         let orderList = []

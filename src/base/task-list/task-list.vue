@@ -58,7 +58,7 @@
       this.touch = {}
       this.listHeight = []
     },
-    props: ['taskList', 'hasTask'],
+    props: ['taskList'],
     data() {
       return {
         scrollY: -1,
@@ -72,6 +72,7 @@
     },
     computed: {
       shortcutList() {
+        // console.log('shortcutList', this.taskList)
         return this.taskList.map((group) => {
           return group.title.substr(0, 1)
         })
@@ -137,8 +138,9 @@
         batchUpdateMatter(_id, updateData).then(res => {
           if (res.code === ERR_OK) {
             console.log('batchUpdateMatter', res.data)
+            this.inactivateTask(res.data[1].id)
             // let list = this._updateList(this.taskList, _id)
-            // popupTips(this, 'success', `${plan.desc}已归档`, 1000, 'bottom')
+            popupTips(this, 'success', `${plan.desc}已归档`, 1000, 'bottom')
             // this.$emit('update:taskList', list)
           } else {
           }
@@ -164,9 +166,10 @@
         deleteMatter(_id).then(res => {
           if (res.code === ERR_OK) {
             // *** 在列表中删除该任务
-            let list = this._updateList(this.taskList, _id)
+            this.inactivateTask(_id)
+            // let list = this._updateList(this.taskList, _id)
             popupTips(this, 'success', `${plan.desc}已删除`, 1000, 'bottom')
-            this.$emit('update:taskList', list)
+            // this.$emit('update:taskList', list)
           } else {
           }
         })
@@ -233,7 +236,8 @@
         this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
       },
       ...mapActions([
-        'insertPlan'
+        'insertPlan',
+        'inactivateTask'
       ])
     },
     watch: {
@@ -241,7 +245,7 @@
         setTimeout(() => {
           this._calculateHeight()
           if (this.taskList.length === 0) {
-            this.$emit('update:hasTask', false)
+            // this.$emit('update:hasTask', false)
           }
         }, 20)
       },

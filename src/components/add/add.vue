@@ -28,9 +28,10 @@
 
   import { Group, Cell, XInput, PopupRadio, InlineXNumber, XButton } from 'vux'
   import { ERR_OK } from 'api/config'
-  import { getAllPro, addMatterToPro } from 'api/project'
+  import { addMatterToPro, getAllPro } from 'api/project'
   import { addPlanToMatter } from 'api/matter'
   import { getFirstChar, popupTips } from 'common/js/util.js'
+  import {mapGetters} from 'vuex'
 
   export default {
     beforeRouteEnter(to, from, next) {
@@ -42,7 +43,7 @@
         vm.rangeType = ['今日计划', '任务列表', '整理箱']
         vm.predict = 0
         vm.letter = '首字母'
-        vm._getProList()
+        // vm._getProList()
       })
     },
     data () {
@@ -50,15 +51,26 @@
         flag: true,
         show: false,
         task: '',
-        allPro: [],
+        // proList: [],
         proName: '',
-        allProName: [],
+        // allProName: [],
         type: '',
         rangeType: [],
         predict: 0,
-        letter: '',
-        rangeLetter: []
+        letter: ''
+        // rangeLetter: []
       }
+    },
+    computed: {
+      allProName() {
+        return this._getAllProName(this.projectList)
+      },
+      rangeLetter() {
+        return this._getRangeLetter()
+      },
+      ...mapGetters([
+        'projectList'
+      ])
     },
     created() {
     },
@@ -83,7 +95,7 @@
           if (this.type[0] === '整理箱') {
             state = false
           }
-          let _proId = this._getProId(this.allPro, this.proName)
+          let _proId = this._getProId(this.projectList, this.proName)
           let matter = {
             desc: this.task,
             project: _proId,
@@ -123,8 +135,8 @@
       _getProList() {
         getAllPro().then(res => {
           if (res.code === ERR_OK) {
-            this.allPro = res.data
-            this.allProName = this._getAllProName(this.allPro)
+            this.projectList = res.data
+            this.allProName = this._getAllProName(this.projectList)
             this.rangeLetter = this._getRangeLetter()
           }
         })

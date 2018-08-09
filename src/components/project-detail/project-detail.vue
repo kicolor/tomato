@@ -2,7 +2,7 @@
   <transition name="slide">
     <div class="project-wrapper">
       <div class="project-header">
-        <p class="project-name">{{project &&project.name}}</p>
+        <p class="project-name">{{project && project.name}}</p>
         <i class="icon-back" @click="back"></i>
       </div>
       <scroll class="project-detail">

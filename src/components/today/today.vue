@@ -11,12 +11,12 @@
             </div>
           </slider>
         </div>
-        <div v-show="hasPlan" class="plan-list">
+        <div v-show="planList.length" class="plan-list">
             <plan-list ref="list" :plan-list="sequencePlanList" :all-matter="allMatter"/>
         </div>
       </div>
-      <tips v-show="!hasPlan" :type="type" class="tips"></tips>
-      <div class="loading-container" v-show="false">
+      <tips v-show="loadMatter && !planList.length" :type="type" class="tips"></tips>
+      <div class="loading-container" v-show="!loadMatter">
         <loading></loading>
       </div>
       <router-view></router-view>
@@ -57,23 +57,24 @@
         // sequencePlanList: [],
         allMatter: [],
         today: true,
-        hasPlan: true,
+        // hasPlan: true,
         type: 1
       }
     },
     computed: {
       sequencePlanList() {
-        console.log('sequencePlanList')
+        // console.log('sequencePlanList')
         return this._normalizePlan(this.planList)
       },
       ...mapGetters([
+        'loadMatter',
         'planList'
       ])
     },
     created() {
       this._getRecommend()
       this._getDiscList()
-      this._getPlanList()
+      // this._getPlanList()
     },
     methods: {
       handlePlaylist(playlist) {
@@ -111,7 +112,7 @@
               this.setPlanList(list)
               // this.sequencePlanList = this._normalizePlan(list)
             } else {
-              this.hasPlan = false
+              // this.hasPlan = false
             }
             this.loading = false
           }
@@ -131,7 +132,7 @@
           items: []
         }
         if (list.length > 0) {
-          this.hasPlan = true
+          // this.hasPlan = true
           list.forEach((item) => {
             if (this._isOver(item.updatedAt)) {
               over.items.push(item)
@@ -142,8 +143,6 @@
               complete.items.push(item)
             }
           })
-        } else {
-          this.hasPlan = false
         }
         let arr = [over, today, complete]
         return arr

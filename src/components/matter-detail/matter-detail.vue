@@ -39,6 +39,7 @@
   import { getFirstChar, popupTips } from 'common/js/util'
   import { getAllPro } from 'api/project'
   import { updateMatter, batchUpdateMatter, deleteMatter } from 'api/matter'
+  import {mapGetters, mapActions} from 'vuex'
 
   export default {
     beforeRouteEnter (to, from, next) {
@@ -64,17 +65,17 @@
         next()
       }
     },
-    created () {
-      this._getProList()
-    },
+    // created () {
+    //   this._getProList()
+    // },
     props: ['matter'],
     data () {
       return {
         tips: '',
-        allPro: [],
-        allProName: [],
+        // projectList: [],
+        // allProName: [],
         proName: '',
-        rangeLetter: [],
+        // rangeLetter: [],
         letter: ''
       }
     },
@@ -97,28 +98,38 @@
       },
       date() {
         return this.matter.createdAt && this.matter.createdAt.substring(0, 10)
-      }
+      },
+      allProName() {
+        return this._getAllProName(this.projectList)
+      },
+      rangeLetter() {
+        return this._getRangeLetter()
+      },
+      ...mapGetters([
+        'projectList'
+      ])
     },
     methods: {
       back () {
         this.$router.back()
       },
       submit () {
-        this._updateMatter(0, '修改成功')
+        this._updateMatter(1, '修改成功')
       },
       active() {
-        this._updateMatter(0, '激活成功', false, true)
+        this._updateMatter(2, '激活成功', false, true)
       },
       archive () {
-        this._updateMatter(1, '归档成功', true)
+        this._updateMatter(0, '归档成功', true)
       },
       cart() {
-        this._updateMatter(1, '加入整理箱', false, false)
+        this._updateMatter(0, '加入整理箱', false, false)
       },
       del () {
         const _id = this.matter.id
         deleteMatter(_id).then(res => {
           if (res.code === ERR_OK) {
+            this.inactivateTask(_id)
             this.tips = '删除成功'
             this.$router.back()
           }
@@ -129,7 +140,7 @@
           popupTips(this, 'warns', '请填写任务名称')
         } else {
           const _id = this.matter.id
-          const _proId = this._getProId(this.allPro, this.proName)
+          const _proId = this._getProId(this.projectList, this.proName)
           let key = this.letter
           if (key === '首字母') {
             key = getFirstChar(this.matter.desc).toUpperCase()
@@ -147,9 +158,10 @@
             archive,
             state
           }
-          if (type) {
+          if (!type) {
             batchUpdateMatter(_id, updateData).then(res => {
               if (res.code === ERR_OK) {
+                this.inactivateTask(_id)
                 this.tips = tips
                 this.$router.back()
               }
@@ -157,6 +169,12 @@
           } else {
             updateMatter(_id, updateData).then(res => {
               if (res.code === ERR_OK) {
+                let task = res.data
+                if (type === 1 && !task.archive && task.state) {
+                  this.modifyTask(task)
+                } else if (type === 2) {
+                  this.insertTask(task)
+                }
                 this.tips = tips
                 this.$router.back()
               }
@@ -167,8 +185,8 @@
       _getProList() {
         getAllPro().then(res => {
           if (res.code === ERR_OK) {
-            this.allPro = res.data
-            this.allProName = this._getAllProName(this.allPro)
+            this.projectList = res.data
+            this.allProName = this._getAllProName(this.projectList)
             this.rangeLetter = this._getRangeLetter()
           }
         })
@@ -187,7 +205,12 @@
         }
         list.push('#')
         return list
-      }
+      },
+      ...mapActions([
+        'inactivateTask',
+        'insertTask',
+        'modifyTask'
+      ])
     },
     components: {
       Scroll,

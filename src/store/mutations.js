@@ -37,14 +37,20 @@ const matutaions = {
   [types.SET_FAVORITE_LIST](state, list) {
     state.favoriteList = list
   },
+  [types.SET_LOAD_MATTER](state, loading) {
+    state.loadMatter = loading
+  },
   [types.SET_TASK_LIST](state, list) {
     state.taskList = list
   },
-  [types.SET_PLAN_LIST](state, list) {
-    state.planList = list
-  },
+  // [types.SET_PLAN_LIST](state, list) {
+  //   state.planList = list
+  // },
   [types.SET_TOMATO_LIST](state, list) {
     state.tomatoList = list
+  },
+  [types.SET_PROJECT_LIST](state, list) {
+    state.projectList = list
   }
 }
 
