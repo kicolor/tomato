@@ -89,10 +89,11 @@
         })
       },
       selectItem(item) {
+        let {...target} = item
         this.$router.push({
           name: 'projectDetail',
           params: {
-            project: item
+            project: target
           }
         })
       },
