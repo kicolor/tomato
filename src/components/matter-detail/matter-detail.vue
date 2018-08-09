@@ -48,6 +48,7 @@
           vm.proName = vm.matter.proName
           vm.letter = vm.matter.key
           vm.tips = ''
+          vm.originProId = vm.matter.project
         } else {
           vm.$router.push({
             path: '/task'
@@ -76,7 +77,8 @@
         // allProName: [],
         proName: '',
         // rangeLetter: [],
-        letter: ''
+        letter: '',
+        originProId: ''
       }
     },
     mounted() {
@@ -130,6 +132,10 @@
         deleteMatter(_id).then(res => {
           if (res.code === ERR_OK) {
             this.inactivateTask(_id)
+            this.changeMatterAttribute({
+              projectId: this.originProId,
+              matterId: _id
+            })
             this.tips = '删除成功'
             this.$router.back()
           }
@@ -161,7 +167,13 @@
           if (!type) {
             batchUpdateMatter(_id, updateData).then(res => {
               if (res.code === ERR_OK) {
+                let task = res.data[1]
                 this.inactivateTask(_id)
+                this.changeMatterAttribute({
+                  projectId: this.originProId,
+                  matterId: _id,
+                  task
+                })
                 this.tips = tips
                 this.$router.back()
               }
@@ -172,8 +184,18 @@
                 let task = res.data
                 if (type === 1 && !task.archive && task.state) {
                   this.modifyTask(task)
+                  this.changeMatterAttribute({
+                    projectId: this.originProId,
+                    matterId: _id,
+                    task
+                  })
                 } else if (type === 2) {
                   this.insertTask(task)
+                  this.changeMatterAttribute({
+                    projectId: this.originProId,
+                    matterId: _id,
+                    task
+                  })
                 }
                 this.tips = tips
                 this.$router.back()
@@ -209,7 +231,8 @@
       ...mapActions([
         'inactivateTask',
         'insertTask',
-        'modifyTask'
+        'modifyTask',
+        'changeMatterAttribute'
       ])
     },
     components: {

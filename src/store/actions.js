@@ -172,6 +172,33 @@ export const deleteTask = function ({commit, state}, task) {
 
 }
 
+export const changeMatterAttribute = function ({commit, state}, {projectId, matterId, task = {}}) {
+  console.log('changeMatterAttribute')
+  let projectList = deepCopy(state.projectList)
+  let projectIndex = findIndexOfId(projectList, projectId)
+  let matterList = projectList[projectIndex].matter
+  let matterIndex = findIndexOfId(matterList, matterId)
+  console.log('matter', matterList[matterIndex])
+  // let taskList = state.taskList.slice()
+  // let taskIndex = findIndexOfId(taskList, matterId)
+  if (Object.keys(task).length) {
+    let matter = matterList[matterIndex]
+    // let task = taskList[taskIndex]
+    console.log('task', task)
+    if (matter.project === task.project) {
+      matterList.splice(matterIndex, 1, task)
+    } else {
+      matterList.splice(matterIndex, 1)
+      projectIndex = findIndexOfId(projectList, task.project)
+      matterList = projectList[projectIndex].matter
+      matterList.push(task)
+    }
+  } else {
+    matterList.splice(matterIndex, 1)
+  }
+  commit(types.SET_PROJECT_LIST, projectList)
+}
+
 export const insertProject = function ({commit, state}, project) {
   let projectList = state.projectList.slice()
   projectList.unshift(project)
