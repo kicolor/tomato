@@ -105,6 +105,8 @@
         }
         batchArchivePro(_id, this._matterIds, updateData).then(res => {
           if (res.code === ERR_OK) {
+            // *** 项目中所有事项都归档 => 修改 taskList
+            console.log('batchArchivePro', res.data)
             this.tips = '归档成功'
             this.$router.back()
           }
@@ -114,6 +116,8 @@
         const _id = this.project.id
         batchDelPro(_id).then(res => {
           if (res.code === ERR_OK) {
+            // *** 项目中所有事项都删除 => 修改 taskList
+            console.log('batchDelPro', res.data)
             this.tips = '删除成功'
             this.$router.back()
           }
@@ -130,8 +134,9 @@
           key: getFirstChar(desc).toUpperCase()
         }
         addMatterToPro(_id, matter).then(res => {
-          console.log('res', res)
           if (res.code === ERR_OK) {
+            console.log('addMatterToPro', res.data)
+            // *** 修改 projectList 和 taskList
             this.list[index].items.push(res.data[0])
             console.log('this.list', this.list)
           }

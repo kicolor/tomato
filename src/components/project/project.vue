@@ -100,7 +100,7 @@
       clear() {
         this.desc = ''
       },
-      _getProjectList() {
+      _getProjetList() {
         getAllPro({include: 'matter', order: ['archive ASC', 'createdAt DESC']}).then(res => {
           if (res.code === ERR_OK) {
             this.projectList = res.data
