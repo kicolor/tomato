@@ -29,6 +29,7 @@
   import { ERR_OK } from 'api/config'
   import { addMatterToPro, batchDelPro, batchArchivePro } from 'api/project'
   import { getFirstChar, popupTips } from 'common/js/util'
+  import {mapActions} from 'vuex'
 
   export default {
     beforeRouteEnter (to, from, next) {
@@ -107,17 +108,25 @@
           if (res.code === ERR_OK) {
             // *** 项目中所有事项都归档 => 修改 taskList
             console.log('batchArchivePro', res.data)
+            let archiveArr = this.list[0].items.concat(this.list[1].items)
+            this.archiveProject({
+              projectId: _id,
+              archiveArr
+            })
+            this.deleteTaskArr(this.list[1].items)
             this.tips = '归档成功'
             this.$router.back()
           }
         })
       },
       delPro() {
+        console.log('project', this.project)
+        console.log('list', this.list)
         const _id = this.project.id
         batchDelPro(_id).then(res => {
           if (res.code === ERR_OK) {
-            // *** 项目中所有事项都删除 => 修改 taskList
-            console.log('batchDelPro', res.data)
+            this.deleteProject(_id)
+            this.deleteTaskArr(this.list[1].items)
             this.tips = '删除成功'
             this.$router.back()
           }
@@ -135,10 +144,16 @@
         }
         addMatterToPro(_id, matter).then(res => {
           if (res.code === ERR_OK) {
-            console.log('addMatterToPro', res.data)
-            // *** 修改 projectList 和 taskList
-            this.list[index].items.push(res.data[0])
-            console.log('this.list', this.list)
+            let matter = res.data[0]
+            let project = res.data[1]
+            this.list[index].items.push(matter)
+            this.insertMatter({
+              project,
+              matter
+            })
+            if (index === 1) {
+              this.insertTask(matter)
+            }
           }
         })
       },
@@ -168,7 +183,14 @@
           return true
         })
         return Array.of(cart, task, archive)
-      }
+      },
+      ...mapActions([
+        'insertMatter',
+        'insertTask',
+        'deleteProject',
+        'archiveProject',
+        'deleteTaskArr'
+      ])
     },
     components: {
       Scroll,
