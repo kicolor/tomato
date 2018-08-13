@@ -5,10 +5,10 @@
       <input ref="desc" v-model="desc" autofocus="autofocus" class="box" :placeholder="placeholder" @keyup.enter="addProject"/>
       <i @click="clear" v-show="desc" class="icon-dismiss"></i>
     </div>
-    <scroll :data="projectList" class="projectlist" ref="projectlist" :probeType="probeType" :scrollbar="scrollbar">
+    <scroll :data="Array.of(currentIndex)" class="projectlist" ref="projectlist" :probeType="probeType" :scrollbar="scrollbar">
       <div>
         <ul>
-          <li @click="selectItem(project)" class="item" v-for="project in projectList">
+          <li @click="selectItem(index)" class="item" v-for="(project, index) in projectList">
             <div class="icon" :style="{backgroundImage: `url(${require('common/image/'+project.bgImg)})`}">
               <p class="project">{{project.name}}</p>
               <x-icon v-show="project.archive" type="ios-checkmark-empty" class="complete"></x-icon>
@@ -36,9 +36,14 @@
   import { Icon } from 'vux'
   import { ERR_OK } from 'api/config'
   import { addPro, getAllPro } from 'api/project'
-  import {mapGetters, mapActions} from 'vuex'
+  import {mapGetters, mapMutations, mapActions} from 'vuex'
 
   export default {
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        vm.setCurrentIndex(-1)
+      })
+    },
     // beforeRouteEnter(to, from, next) {
     //   next(vm => {
     //     vm._getProjectList()
@@ -51,9 +56,6 @@
     // created() {
     //   this._getProjectList()
     // },
-    mounted() {
-      console.log('project', this.$root)
-    },
     data() {
       return {
         desc: '',
@@ -68,6 +70,7 @@
     },
     computed: {
       ...mapGetters([
+        'currentIndex',
         'projectList'
       ])
     },
@@ -88,13 +91,14 @@
           }
         })
       },
-      selectItem(item) {
-        let {...target} = item
+      selectItem(index) {
+        this.setCurrentIndex(index)
+        // let {...target} = item
         this.$router.push({
-          name: 'projectDetail',
-          params: {
-            project: target
-          }
+          name: 'projectDetail'
+          // params: {
+          //   project: target
+          // }
         })
       },
       clear() {
@@ -131,6 +135,9 @@
         }
         return orderList
       },
+      ...mapMutations({
+        setCurrentIndex: 'SET_CURRENT_INDEX'
+      }),
       ...mapActions([
         'insertProject'
       ])

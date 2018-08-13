@@ -9,10 +9,10 @@
       </div>
       <div class="page-content">
         <group class="vux-group" ref="group">
-          <cell title="整理箱" :value="cartLen" :link="{name: 'state', params: {state: false}}">
+          <cell title="整理箱" :value="cartLen" :link="{name: 'stateCart'}">
             <x-icon slot="icon" type="cart" class="title-icon"></x-icon>
           </cell>
-          <cell title="任务" :value="taskLen" :link="{name: 'state', params: {state: true}}">
+          <cell title="任务" :value="taskLen" :link="{name: 'stateTask'}">
             <x-icon slot="icon" type="list-box" class="title-icon"></x-icon>
           </cell>
           <cell title="干扰事项" value="4" is-link>

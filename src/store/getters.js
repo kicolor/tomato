@@ -81,3 +81,7 @@ export const currentTomato = (state) => {
 }
 
 export const projectList = state => state.projectList
+
+export const currentProject = (state) => {
+  return state.projectList[state.currentIndex] || {}
+}

@@ -1,12 +1,12 @@
 <template>
   <transition name="slide">
-    <div class="project-wrapper">
-      <div class="project-header">
+    <div class="state-wrapper">
+      <div class="state-header">
         <i class="icon-back" @click="back"></i>
         <x-icon class="add-circle" type="add-circle-outline" @click.native="addMatter"></x-icon>
-        <p class="project-name">{{type}}</p>
+        <p class="state-name">{{type}}</p>
       </div>
-      <scroll class="project-detail">
+      <scroll class="state-detail">
         <div>
           <ul>
             <li v-for="group in list" :key="group.id">
@@ -49,7 +49,12 @@
         this.$router.back()
       },
       addMatter() {
-        console.log('addMatter')
+        this.$router.push({
+          name: 'add',
+          params: {
+            type: this.type
+          }
+        })
       },
       _getMatterListOfType(data, type) {
         let list = {}
@@ -93,7 +98,7 @@
   .slide-enter, .slide-leave-to
     transform: translate3d(100%, 0, 0)
 
-  .project-wrapper
+  .state-wrapper
     position: fixed
     top: 0
     left: 0
@@ -104,7 +109,7 @@
     flex-direction: column
     justify-content: center
     align-item: stretch
-    .project-header
+    .state-header
       flex: none
       height: 84px
       .icon-back
@@ -121,12 +126,12 @@
         padding: 20px
         width: 50px
         fill: $color-theme-dd
-      .project-name
+      .state-name
         text-align: center
         height: 84px
         line-height: 84px
         color: $color-theme-dd
-    .project-detail
+    .state-detail
       flex: 1
       height: 100%
       overflow: hidden

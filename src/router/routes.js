@@ -77,7 +77,19 @@ const Add = (resolve) => {
 }
 
 const State = (resolve) => {
-  import('components/state/state').then((module) => {
+  import('base/state/state').then((module) => {
+    resolve(module)
+  })
+}
+
+const StateCart = (resolve) => {
+  import('components/state-cart/state-cart').then((module) => {
+    resolve(module)
+  })
+}
+
+const StateTask = (resolve) => {
+  import('components/state-task/state-task').then((module) => {
     resolve(module)
   })
 }
@@ -172,8 +184,20 @@ export default [
     props: true
   },
   {
+    name: 'stateCart',
+    path: '/state-cart',
+    component: StateCart
+  },
+  {
+    name: 'stateTask',
+    path: '/state-task',
+    component: StateTask
+  },
+  {
+    name: 'add',
     path: '/add',
-    component: Add
+    component: Add,
+    props: true
   },
   {
     path: '/test',

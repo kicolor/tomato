@@ -179,7 +179,6 @@ export const deleteTaskArr = function ({commit, state}, taskArr) {
 }
 
 export const changeMatterAttribute = function ({commit, state}, {projectId, matterId, task = {}}) {
-  console.log('changeMatterAttribute')
   let projectList = deepCopy(state.projectList)
   let projectIndex = findIndexOfId(projectList, projectId)
   let matterList = projectList[projectIndex].matter
@@ -202,7 +201,8 @@ export const changeMatterAttribute = function ({commit, state}, {projectId, matt
 
 export const insertMatter = function ({commit, state}, {project, matter}) {
   let projectList = deepCopy(state.projectList)
-  let index = findIndex(projectList, project)
+  // let index = findIndex(projectList, project)
+  let index = state.currentIndex
   let pro = projectList.splice(index, 1)[0]
   if (pro.archive) {
     index = projectList.findIndex(item => {
@@ -212,6 +212,7 @@ export const insertMatter = function ({commit, state}, {project, matter}) {
   pro = Object.assign({}, pro, project)
   pro.matter.push(matter)
   projectList.splice(index, 0, pro)
+  commit(types.SET_CURRENT_INDEX, index)
   commit(types.SET_PROJECT_LIST, projectList)
 }
 
@@ -223,7 +224,8 @@ export const insertProject = function ({commit, state}, project) {
 
 export const deleteProject = function ({commit, state}, projectId) {
   let projectList = state.projectList.slice()
-  let index = findIndexOfId(projectList, projectId)
+  // let index = findIndexOfId(projectList, projectId)
+  let index = state.currentIndex
   projectList.splice(index, 1)
   commit(types.SET_PROJECT_LIST, projectList)
 }

@@ -2,7 +2,7 @@
   <transition name="slide">
     <div class="project-wrapper">
       <div class="project-header">
-        <p class="project-name">{{project && project.name}}</p>
+        <p class="project-name">{{currentProject && currentProject.name}}</p>
         <i class="icon-back" @click="back"></i>
       </div>
       <scroll class="project-detail">
@@ -27,27 +27,28 @@
   import DetailItem from 'base/project-detail-item/project-detail-item'
   import { Group, Cell, XInput, XButton } from 'vux'
   import { ERR_OK } from 'api/config'
+  import {matterType} from 'common/js/config'
   import { addMatterToPro, batchDelPro, batchArchivePro } from 'api/project'
   import { getFirstChar, popupTips } from 'common/js/util'
-  import {mapActions} from 'vuex'
+  import {mapGetters, mapActions} from 'vuex'
 
   export default {
-    beforeRouteEnter (to, from, next) {
-      next(vm => {
-        if (vm.project) {
-          let matter = vm.project.matter
-          vm.list = vm._normalizeMatter(matter)
-          vm.tips = ''
-          if (vm.project.name === '默认项目') {
-            vm.isDefaultPro = true
-          }
-        } else {
-          vm.$router.push({
-            path: '/project'
-          })
-        }
-      })
-    },
+    // beforeRouteEnter (to, from, next) {
+    //   next(vm => {
+    //     if (vm.project) {
+    //       let matter = vm.project.matter
+    //       vm.list = vm._normalizeMatter(matter)
+    //       vm.tips = ''
+    //       if (vm.project.name === '默认项目') {
+    //         vm.isDefaultPro = true
+    //       }
+    //     } else {
+    //       vm.$router.push({
+    //         path: '/project'
+    //       })
+    //     }
+    //   })
+    // },
     beforeRouteLeave (to, from, next) {
       if (this.tips) {
         popupTips(this, 'success', this.tips, 1000)
@@ -58,17 +59,17 @@
         next()
       }
     },
-    props: ['project'],
+    // props: ['project'],
     data() {
       return {
         tips: '',
         desc: '',
-        cart: '整理箱',
-        task: '待办任务',
-        archive: '已归档任务',
-        types: ['整理箱', '待办任务', '已归档任务'],
-        list: [],
-        isDefaultPro: false
+        cart: matterType.cart,
+        task: matterType.task,
+        archive: matterType.archive,
+        types: [matterType.cart, matterType.task, matterType.archive]
+        // list: [],
+        // isDefaultPro: false
       }
     },
     computed: {
@@ -87,7 +88,19 @@
           group.items.map(item => list.push(item.id))
         })
         return list
-      }
+      },
+      isDefaultPro() {
+        return this.currentProject.name === '默认项目'
+      },
+      list() {
+        return this._normalizeMatter(this.currentProject.matter || [])
+      },
+      ...mapGetters([
+        'currentProject'
+      ])
+    },
+    mounted() {
+      this.tips = ''
     },
     methods: {
       back () {
@@ -100,7 +113,7 @@
         this._addToList(1, desc)
       },
       archivePro() {
-        const _id = this.project.id
+        const _id = this.currentProject.id
         let updateData = {
           archive: true
         }
@@ -118,7 +131,7 @@
         })
       },
       delPro() {
-        const _id = this.project.id
+        const _id = this.currentProject.id
         batchDelPro(_id).then(res => {
           if (res.code === ERR_OK) {
             this.deleteProject(_id)
@@ -129,13 +142,13 @@
         })
       },
       _addToList(index, desc) {
-        let _id = this.project.id
+        let _id = this.currentProject.id
         let matter = {
           project: _id,
           desc: desc,
           state: index,
           archive: false,
-          proName: this.project.name,
+          proName: this.currentProject.name,
           key: getFirstChar(desc).toUpperCase()
         }
         addMatterToPro(_id, matter).then(res => {
