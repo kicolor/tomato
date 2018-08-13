@@ -9,10 +9,10 @@
       </div>
       <div class="page-content">
         <group class="vux-group" ref="group">
-          <cell title="整理箱" :value="cartList.length" :link="{name: 'state', params: {state: 'cart', list: cartList} }">
+          <cell title="整理箱" :value="cartLen" :link="{name: 'state', params: {state: false}}">
             <x-icon slot="icon" type="cart" class="title-icon"></x-icon>
           </cell>
-          <cell title="任务" value="7" is-link>
+          <cell title="任务" :value="taskLen" :link="{name: 'state', params: {state: true}}">
             <x-icon slot="icon" type="list-box" class="title-icon"></x-icon>
           </cell>
           <cell title="干扰事项" value="4" is-link>
@@ -45,13 +45,14 @@
   import { Sticky, Group, Cell, Tab, TabItem, ViewBox, XInput, XDialog } from 'vux'
   import { getAllPro, addPro } from 'api/project'
   import { ERR_OK } from 'api/config'
+  import {mapGetters, mapActions} from 'vuex'
 
   export default {
-    beforeRouteEnter(to, from, next) {
-      next(vm => {
-        vm._getAllPro()
-      })
-    },
+    // beforeRouteEnter(to, from, next) {
+    //   next(vm => {
+    //     vm._getAllPro()
+    //   })
+    // },
     created() {
       this.probeType = 3
       this.listenScroll = true
@@ -60,84 +61,14 @@
       return {
         dialogType: '',
         showDialog: false,
-        allPro: [],
+        // projectList: [],
         proType: 0,
-        cartList: [],
+        // cartList: [],
         tabs: ['项目', '归档项目'],
         tabItem: '项目'
       }
     },
-    methods: {
-      back () {
-        this.$router.back()
-      },
-      scroll(pos) {
-        this.scrollY = pos.y
-      },
-      user () {
-        this.dialogType = 'login'
-        // *** v-if 可以，v-show 不生效，原因？
-        this.showDialog = !this.showDialog
-        console.log('user', this.dialogType, this.showDialog)
-      },
-      selectProject (item) {
-        console.log('selectProject')
-        this.$router.push({
-          name: '',
-          params: {}
-        })
-      },
-      close () {
-        this.showDialog = false
-      },
-      addPro(desc) {
-        console.log('addPro')
-        let pro = {
-          name: desc
-        }
-        addPro(pro).then(res => {
-          if (res.code === ERR_OK) {
-            let pro = res.data
-            pro.matter = []
-            this.allPro.push(pro)
-          }
-        })
-      },
-      chooseTab(index) {
-        this.proType = index
-      },
-      _getMatterListOfType(data, type) {
-        let list = []
-        data.map(item => {
-          item.matter.map(target => {
-            if (!target.archive) {
-              if (target.state == type) {
-                list.push(target)
-              }
-            }
-          })
-        })
-        return list
-      },
-      _getProListOfType(type) {
-        return this.allPro.filter(item => {
-          return item.archive == type
-        })
-      },
-      _getAllPro() {
-        getAllPro({include: 'matter'}).then(res => {
-          if (res.code === ERR_OK) {
-            console.log('res.data', res.data)
-            this.allPro = res.data
-            this.cartList = this._getMatterListOfType(res.data, 0)
-          }
-        })
-      }
-    },
     computed: {
-      proList() {
-        return this._getProListOfType(this.proType)
-      },
       scrollY(newVal) {
         // let translateY = Math.max(this.minTransalteY, newVal)
         // let scale = 1
@@ -176,7 +107,106 @@
         } else {
 
         }
-      }
+      },
+      proList() {
+        return this._getProListOfType(this.proType)
+      },
+      cartLen() {
+        return this._getMatterListLengthOfType(this.projectList, 0)
+      },
+      taskLen() {
+        return this._getMatterListLengthOfType(this.projectList, 1)
+      },
+      cartList() {
+        return this._getMatterListOfType(this.projectList, 0)
+      },
+      ...mapGetters([
+        'projectList'
+      ])
+    },
+    methods: {
+      back () {
+        this.$router.back()
+      },
+      scroll(pos) {
+        this.scrollY = pos.y
+      },
+      user () {
+        this.dialogType = 'login'
+        // *** v-if 可以，v-show 不生效，原因？
+        this.showDialog = !this.showDialog
+        console.log('user', this.dialogType, this.showDialog)
+      },
+      selectProject (item) {
+        this.$router.push({
+          name: '',
+          params: {}
+        })
+      },
+      close () {
+        this.showDialog = false
+      },
+      addPro(desc) {
+        let pro = {
+          name: desc,
+          bgImg: '0.jpg',
+          archive: false
+        }
+        addPro(pro).then(res => {
+          if (res.code === ERR_OK) {
+            let project = res.data
+            project.matter = []
+            // this.projectList.push(pro)
+            this.insertProject(project)
+          }
+        })
+      },
+      chooseTab(index) {
+        this.proType = index
+      },
+      _getMatterListLengthOfType(list, type) {
+        let len = 0
+        list.map(item => {
+          item.matter.map(target => {
+            if (!target.archive) {
+              if (target.state == type) {
+                len++
+              }
+            }
+          })
+        })
+        return len
+      },
+      _getMatterListOfType(data, type) {
+        let list = []
+        data.map(item => {
+          item.matter.map(target => {
+            if (!target.archive) {
+              if (target.state == type) {
+                list.push(target)
+              }
+            }
+          })
+        })
+        return list
+      },
+      _getProListOfType(type) {
+        return this.projectList.filter(item => {
+          return item.archive == type
+        })
+      },
+      _getAllPro() {
+        getAllPro({include: 'matter'}).then(res => {
+          if (res.code === ERR_OK) {
+            console.log('res.data', res.data)
+            this.projectList = res.data
+            this.cartList = this._getMatterListOfType(res.data, 0)
+          }
+        })
+      },
+      ...mapActions([
+        'insertProject'
+      ])
     },
     components: {
       Scroll,

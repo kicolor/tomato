@@ -80,10 +80,10 @@
         }
         addPro(pro).then(res => {
           if (res.code === ERR_OK) {
-            let pro = res.data
-            pro.matter = []
+            let project = res.data
+            project.matter = []
             // this.projectList.unshift(pro)
-            this.insertProject(pro)
+            this.insertProject(project)
             this.desc = ''
           }
         })

@@ -156,6 +156,7 @@ export const inactivateTask = function ({commit, state}, taskId) {
 
 export const insertTask = function ({commit, state}, task) {
   let taskList = state.taskList.slice()
+  task.plan = []
   taskList.push(task)
   commit(types.SET_TASK_LIST, taskList)
 }
@@ -202,9 +203,15 @@ export const changeMatterAttribute = function ({commit, state}, {projectId, matt
 export const insertMatter = function ({commit, state}, {project, matter}) {
   let projectList = deepCopy(state.projectList)
   let index = findIndex(projectList, project)
-  let pro = projectList[index]
-  projectList[index].matter.push(matter)
-  projectList[index] = Object.assign({}, pro, project)
+  let pro = projectList.splice(index, 1)[0]
+  if (pro.archive) {
+    index = projectList.findIndex(item => {
+      return item.archive || item.createdAt < project.createdAt
+    })
+  }
+  pro = Object.assign({}, pro, project)
+  pro.matter.push(matter)
+  projectList.splice(index, 0, pro)
   commit(types.SET_PROJECT_LIST, projectList)
 }
 
@@ -224,12 +231,20 @@ export const deleteProject = function ({commit, state}, projectId) {
 export const archiveProject = function ({commit, state}, {projectId, archiveArr}) {
   let projectList = deepCopy(state.projectList)
   let index = findIndexOfId(projectList, projectId)
-  let project = projectList[index]
+  let project = projectList.splice(index, 1)[0]
+  let target = projectList.findIndex(item => {
+    return item.archive && item.createdAt < project.createdAt
+  })
   project.archive = true
   archiveArr.map(item => {
     let i = findIndex(project.matter, item)
     project.matter[i].archive = true
   })
+  if (target === -1) {
+    projectList.push(project)
+  } else {
+    projectList.splice(target, 0, project)
+  }
   commit(types.SET_PROJECT_LIST, projectList)
 }
 

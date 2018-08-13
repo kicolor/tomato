@@ -36,6 +36,7 @@
   import Scroll from 'base/scroll/scroll'
   import { Group, Cell, XInput, XButton, PopupRadio, InlineXNumber } from 'vux'
   import { ERR_OK } from 'api/config'
+  import { matterType } from 'common/js/config'
   import { getFirstChar, popupTips } from 'common/js/util'
   import { getAllPro } from 'api/project'
   import { updateMatter, batchUpdateMatter, deleteMatter } from 'api/matter'
@@ -81,19 +82,16 @@
         originProId: ''
       }
     },
-    mounted() {
-      console.log('route', this.$route)
-    },
     computed: {
       type() {
         if (this.matter) {
           if (this.matter.archive) {
-            return '已归档任务'
+            return matterType.archive
           } else {
             if (this.matter.state) {
-              return '任务列表'
+              return matterType.task
             } else {
-              return '整理箱'
+              return matterType.cart
             }
           }
         }

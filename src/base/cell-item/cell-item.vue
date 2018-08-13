@@ -1,6 +1,6 @@
 <template>
   <group class="vux-group">
-    <cell v-if="hasTitle" class="title" title="默认项目"></cell>
+    <cell v-if="title" class="title" :title="title"></cell>
     <cell class="cell-item"
       v-for="item in list"
       :key="item.id"
@@ -18,10 +18,7 @@
   import { Group, Cell, XInput } from 'vux'
 
   export default {
-    mounted() {
-      console.log('list', this.list)
-    },
-    props: ['hasTitle', 'list', 'hasNew', 'type'],
+    props: ['title', 'list', 'hasNew', 'type'],
     data() {
       return {
         val: ''

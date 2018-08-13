@@ -4,11 +4,15 @@
       <div class="project-header">
         <i class="icon-back" @click="back"></i>
         <x-icon class="add-circle" type="add-circle-outline" @click.native="addMatter"></x-icon>
-        <p class="project-name">整理箱</p>
+        <p class="project-name">{{type}}</p>
       </div>
       <scroll class="project-detail">
         <div>
-          <cell-item :list="list" :has-title="true" :has-new="false" :type="1"></cell-item>
+          <ul>
+            <li v-for="group in list" :key="group.id">
+              <cell-item :list="group.items" :title="group.title" :has-new="false" :type="1"></cell-item>
+            </li>
+          </ul>
         </div>
       </scroll>
     </div>
@@ -17,19 +21,28 @@
 
 <script type="text/ecmascript-6">
 
+  import { matterType } from 'common/js/config'
   import Scroll from 'base/scroll/scroll'
   import CellItem from 'base/cell-item/cell-item'
   import { Group, Cell, XInput, XButton } from 'vux'
+  import {mapGetters} from 'vuex'
 
   export default {
-    beforeRouteEnter(to, from, next) {
-      next(vm => {
-        console.log('vm.state, vm.list', vm.state, vm.list)
-      })
-    },
-    props: ['state', 'list'],
-    mounted() {
-      console.log('this.$route.params', this.$route.params)
+    props: ['state'],
+    computed: {
+      type() {
+        if (this.state) {
+          return matterType.task
+        } else {
+          return matterType.cart
+        }
+      },
+      list() {
+        return this._getMatterListOfType(this.projectList, this.state)
+      },
+      ...mapGetters([
+        'projectList'
+      ])
     },
     methods: {
       back () {
@@ -37,6 +50,28 @@
       },
       addMatter() {
         console.log('addMatter')
+      },
+      _getMatterListOfType(data, type) {
+        let list = {}
+        let id = 0
+        data.map(item => {
+          const name = item.name
+          item.matter.map(target => {
+            if (!target.archive) {
+              if (target.state == type) {
+                if (!list[name]) {
+                  list[name] = {
+                    id: id++,
+                    title: name,
+                    items: []
+                  }
+                }
+                list[name].items.push(target)
+              }
+            }
+          })
+        })
+        return list
       }
     },
     components: {

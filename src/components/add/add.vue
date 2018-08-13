@@ -28,10 +28,11 @@
 
   import { Group, Cell, XInput, PopupRadio, InlineXNumber, XButton } from 'vux'
   import { ERR_OK } from 'api/config'
+  import { matterType } from 'common/js/config'
   import { addMatterToPro, getAllPro } from 'api/project'
   import { addPlanToMatter } from 'api/matter'
   import { getFirstChar, popupTips } from 'common/js/util.js'
-  import {mapGetters} from 'vuex'
+  import {mapGetters, mapActions} from 'vuex'
 
   export default {
     beforeRouteEnter(to, from, next) {
@@ -39,8 +40,8 @@
         vm.flag = true
         vm.task = ''
         vm.proName = '默认项目'
-        vm.type = '今日计划'
-        vm.rangeType = ['今日计划', '任务列表', '整理箱']
+        vm.type = matterType.plan
+        vm.rangeType = [matterType.plan, matterType.task, matterType.cart]
         vm.predict = 0
         vm.letter = '首字母'
         // vm._getProList()
@@ -92,11 +93,11 @@
             }
           }
           let state = true
-          if (this.type[0] === '整理箱') {
+          if (this.type === matterType.cart) {
             state = false
           }
           let _proId = this._getProId(this.projectList, this.proName)
-          let matter = {
+          let currentMatter = {
             desc: this.task,
             project: _proId,
             proName: this.proName,
@@ -109,24 +110,37 @@
           }
           if (this.flag) {
             this.flag = false
-            addMatterToPro(_proId, matter).then(res => {
+            addMatterToPro(_proId, currentMatter).then(res => {
               if (res.code === ERR_OK) {
-                // this.$router.back()
-                if (this.type === '今日计划') {
-                  let _matterId = res.data[0].id
-                  let plan = {
-                    predict: this.predict,
-                    complete: false,
-                    matter: _matterId
-                  }
-                  addPlanToMatter(_matterId, plan).then(res => {
-                    if (res.code === ERR_OK) {
-                      this.$router.back()
+                let matter = res.data[0]
+                let project = res.data[1]
+                this.insertMatter({
+                  project,
+                  matter
+                })
+                if (this.type !== matterType.cart) {
+                  this.insertTask(matter)
+                  if (this.type === matterType.plan) {
+                    let _matterId = res.data[0].id
+                    let plan = {
+                      predict: this.predict,
+                      complete: false,
+                      matter: _matterId
                     }
-                  })
-                } else {
-                  this.$router.back()
+                    addPlanToMatter(_matterId, plan).then(res => {
+                      if (res.code === ERR_OK) {
+                        this.$router.back()
+                        let target = {
+                          desc: this.task,
+                          proName: this.proName
+                        }
+                        target = Object.assign({}, res.data, target)
+                        this.insertPlan(target)
+                      }
+                    })
+                  }
                 }
+                this.$router.back()
               }
             })
           }
@@ -155,7 +169,12 @@
         }
         list.push('#')
         return list
-      }
+      },
+      ...mapActions([
+        'insertMatter',
+        'insertTask',
+        'insertPlan'
+      ])
     },
     watch: {
 

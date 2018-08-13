@@ -242,12 +242,13 @@
     },
     watch: {
       taskList() {
-        setTimeout(() => {
-          this._calculateHeight()
-          if (this.taskList.length === 0) {
-            // this.$emit('update:hasTask', false)
-          }
-        }, 20)
+        this._calculateHeight()
+        // setTimeout(() => {
+        //   this._calculateHeight()
+        //   if (this.taskList.length === 0) {
+        //     // this.$emit('update:hasTask', false)
+        //   }
+        // }, 20)
       },
       scrollY(newY) {
         const listHeight = this.listHeight

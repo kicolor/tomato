@@ -106,8 +106,6 @@
         }
         batchArchivePro(_id, this._matterIds, updateData).then(res => {
           if (res.code === ERR_OK) {
-            // *** 项目中所有事项都归档 => 修改 taskList
-            console.log('batchArchivePro', res.data)
             let archiveArr = this.list[0].items.concat(this.list[1].items)
             this.archiveProject({
               projectId: _id,
@@ -120,8 +118,6 @@
         })
       },
       delPro() {
-        console.log('project', this.project)
-        console.log('list', this.list)
         const _id = this.project.id
         batchDelPro(_id).then(res => {
           if (res.code === ERR_OK) {
