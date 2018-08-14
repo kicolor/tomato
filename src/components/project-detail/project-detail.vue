@@ -52,12 +52,13 @@
     beforeRouteLeave (to, from, next) {
       if (this.tips) {
         popupTips(this, 'success', this.tips, 1000)
-        setTimeout(function() {
+        setTimeout(() => {
           next()
         }, 1000)
       } else {
         next()
       }
+      this.tips = ''
     },
     // props: ['project'],
     data() {
@@ -99,9 +100,6 @@
         'currentProject'
       ])
     },
-    mounted() {
-      this.tips = ''
-    },
     methods: {
       back () {
         this.$router.back()
@@ -120,10 +118,7 @@
         batchArchivePro(_id, this._matterIds, updateData).then(res => {
           if (res.code === ERR_OK) {
             let archiveArr = this.list[0].items.concat(this.list[1].items)
-            this.archiveProject({
-              projectId: _id,
-              archiveArr
-            })
+            this.archiveProject(archiveArr)
             this.deleteTaskArr(this.list[1].items)
             this.tips = '归档成功'
             this.$router.back()
@@ -134,7 +129,7 @@
         const _id = this.currentProject.id
         batchDelPro(_id).then(res => {
           if (res.code === ERR_OK) {
-            this.deleteProject(_id)
+            this.deleteProject()
             this.deleteTaskArr(this.list[1].items)
             this.tips = '删除成功'
             this.$router.back()

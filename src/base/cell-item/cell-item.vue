@@ -2,11 +2,11 @@
   <group class="vux-group">
     <cell v-if="title" class="title" :title="title"></cell>
     <cell class="cell-item"
-      v-for="item in list"
+      v-for="(item, index) in list"
       :key="item.id"
       :title="item.name || item.desc"
       :value="_getCount(item)"
-      @click.native="select(item)"
+      @click.native="showItem(item, index)"
       ></cell>
     <x-input v-if="hasNew" title="添加" placeholder="新建项目" v-model="val" @on-enter="addToList">
       <x-icon slot="label" class="add-circle" type="add-circle-outline"></x-icon>
@@ -18,29 +18,15 @@
   import { Group, Cell, XInput } from 'vux'
 
   export default {
-    props: ['title', 'list', 'hasNew', 'type'],
+    props: ['title', 'list', 'hasNew'],
     data() {
       return {
         val: ''
       }
     },
     methods: {
-      select(item) {
-        if (this.type) {
-          this.$router.push({
-            name: 'matterDetail',
-            params: {
-              matter: item
-            }
-          })
-        } else {
-          this.$router.push({
-            name: 'projectDetail',
-            params: {
-              project: item
-            }
-          })
-        }
+      showItem(item, index) {
+        this.$emit('select', item, index)
       },
       addToList() {
         this.$emit('add-pro', this.val)

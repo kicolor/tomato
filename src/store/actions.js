@@ -222,17 +222,19 @@ export const insertProject = function ({commit, state}, project) {
   commit(types.SET_PROJECT_LIST, projectList)
 }
 
-export const deleteProject = function ({commit, state}, projectId) {
+export const deleteProject = function ({commit, state}) {
   let projectList = state.projectList.slice()
   // let index = findIndexOfId(projectList, projectId)
   let index = state.currentIndex
   projectList.splice(index, 1)
+  commit(types.SET_CURRENT_INDEX, -1)
   commit(types.SET_PROJECT_LIST, projectList)
 }
 
-export const archiveProject = function ({commit, state}, {projectId, archiveArr}) {
+export const archiveProject = function ({commit, state}, archiveArr) {
   let projectList = deepCopy(state.projectList)
-  let index = findIndexOfId(projectList, projectId)
+  // let index = findIndexOfId(projectList, projectId)
+  let index = state.currentIndex
   let project = projectList.splice(index, 1)[0]
   let target = projectList.findIndex(item => {
     return item.archive && item.createdAt < project.createdAt
@@ -244,9 +246,11 @@ export const archiveProject = function ({commit, state}, {projectId, archiveArr}
   })
   if (target === -1) {
     projectList.push(project)
+    target = projectList.length - 1
   } else {
     projectList.splice(target, 0, project)
   }
+  commit(types.SET_CURRENT_INDEX, target)
   commit(types.SET_PROJECT_LIST, projectList)
 }
 

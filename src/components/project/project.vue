@@ -5,7 +5,7 @@
       <input ref="desc" v-model="desc" autofocus="autofocus" class="box" :placeholder="placeholder" @keyup.enter="addProject"/>
       <i @click="clear" v-show="desc" class="icon-dismiss"></i>
     </div>
-    <scroll :data="Array.of(currentIndex)" class="projectlist" ref="projectlist" :probeType="probeType" :scrollbar="scrollbar">
+    <scroll :data="projectList" class="projectlist" ref="projectlist" :probeType="probeType" :scrollbar="scrollbar">
       <div>
         <ul>
           <li @click="selectItem(index)" class="item" v-for="(project, index) in projectList">
@@ -39,11 +39,11 @@
   import {mapGetters, mapMutations, mapActions} from 'vuex'
 
   export default {
-    beforeRouteEnter(to, from, next) {
-      next(vm => {
-        vm.setCurrentIndex(-1)
-      })
-    },
+    // beforeRouteEnter(to, from, next) {
+    //   next(vm => {
+    //     vm.setCurrentIndex(-1)
+    //   })
+    // },
     // beforeRouteEnter(to, from, next) {
     //   next(vm => {
     //     vm._getProjectList()
@@ -56,6 +56,10 @@
     // created() {
     //   this._getProjectList()
     // },
+    activated() {
+      this.setCurrentIndex(-1)
+      this.$refs.projectlist.refresh()
+    },
     data() {
       return {
         desc: '',
@@ -70,7 +74,6 @@
     },
     computed: {
       ...mapGetters([
-        'currentIndex',
         'projectList'
       ])
     },

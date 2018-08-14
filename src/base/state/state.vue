@@ -1,21 +1,23 @@
 <template>
   <transition name="slide">
-    <div class="state-wrapper">
-      <div class="state-header">
-        <i class="icon-back" @click="back"></i>
-        <x-icon class="add-circle" type="add-circle-outline" @click.native="addMatter"></x-icon>
-        <p class="state-name">{{type}}</p>
-      </div>
-      <scroll class="state-detail">
-        <div>
-          <ul>
-            <li v-for="group in list" :key="group.id">
-              <cell-item :list="group.items" :title="group.title" :has-new="false" :type="1"></cell-item>
-            </li>
-          </ul>
+    <keep-alive>
+      <div class="state-wrapper">
+        <div class="state-header">
+          <i class="icon-back" @click="back"></i>
+          <x-icon class="add-circle" type="add-circle-outline" @click.native="addMatter"></x-icon>
+          <p class="state-name">{{type}}</p>
         </div>
-      </scroll>
-    </div>
+        <scroll class="state-detail">
+          <div>
+            <ul>
+              <li v-for="group in list" :key="group.id">
+                <cell-item :list="group.items" :title="group.title" :has-new="false" @select="selectMatter"></cell-item>
+              </li>
+            </ul>
+          </div>
+        </scroll>
+      </div>
+    </keep-alive>
   </transition>
 </template>
 
@@ -52,7 +54,15 @@
         this.$router.push({
           name: 'add',
           params: {
-            type: this.type
+            mode: this.type
+          }
+        })
+      },
+      selectMatter(item, index) {
+        this.$router.push({
+          name: 'matterDetail',
+          params: {
+            matter: item
           }
         })
       },

@@ -58,6 +58,12 @@
       this.touch = {}
       this.listHeight = []
     },
+    activated() {
+      this.refresh()
+      setTimeout(() => {
+        this._calculateHeight()
+      }, 20)
+    },
     props: ['taskList'],
     data() {
       return {
@@ -214,7 +220,7 @@
       },
       _calculateHeight() {
         this.listHeight = []
-        const list = this.$refs.listGroup
+        const list = this.$refs.listGroup || []
         let height = 0
         this.listHeight.push(height)
         for (let i = 0; i < list.length; i++) {
@@ -242,13 +248,9 @@
     },
     watch: {
       taskList() {
-        this._calculateHeight()
-        // setTimeout(() => {
-        //   this._calculateHeight()
-        //   if (this.taskList.length === 0) {
-        //     // this.$emit('update:hasTask', false)
-        //   }
-        // }, 20)
+        setTimeout(() => {
+          this._calculateHeight()
+        }, 20)
       },
       scrollY(newY) {
         const listHeight = this.listHeight

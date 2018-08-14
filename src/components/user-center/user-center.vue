@@ -25,7 +25,7 @@
             <tab-item :selected="tabItem === item" v-for="(item, index) in tabs" :key="index" @click.native="chooseTab(index)" >{{item}}</tab-item>
           </tab>
           <scroll class="scroll">
-            <cell-item :hasTitle="false" :list="proList" :hasNew="!proType" :type="0" @add-pro="addPro"></cell-item>
+            <cell-item :hasTitle="false" :list="proList" :hasNew="!proType" @add-pro="addPro" @select="selectProject"></cell-item>
           </scroll>
         </div>
       </div>
@@ -45,7 +45,7 @@
   import { Sticky, Group, Cell, Tab, TabItem, ViewBox, XInput, XDialog } from 'vux'
   import { getAllPro, addPro } from 'api/project'
   import { ERR_OK } from 'api/config'
-  import {mapGetters, mapActions} from 'vuex'
+  import {mapGetters, mapMutations, mapActions} from 'vuex'
 
   export default {
     // beforeRouteEnter(to, from, next) {
@@ -65,7 +65,8 @@
         proType: 0,
         // cartList: [],
         tabs: ['项目', '归档项目'],
-        tabItem: '项目'
+        tabItem: '项目',
+        proIndex: 0
       }
     },
     computed: {
@@ -135,12 +136,11 @@
         this.dialogType = 'login'
         // *** v-if 可以，v-show 不生效，原因？
         this.showDialog = !this.showDialog
-        console.log('user', this.dialogType, this.showDialog)
       },
-      selectProject (item) {
+      selectProject(item, index) {
+        this.setCurrentIndex(this.proIndex + index)
         this.$router.push({
-          name: '',
-          params: {}
+          name: 'projectDetail'
         })
       },
       close () {
@@ -162,6 +162,7 @@
         })
       },
       chooseTab(index) {
+        this.proIndex = index * this.proList.length
         this.proType = index
       },
       _getMatterListLengthOfType(list, type) {
@@ -204,6 +205,9 @@
           }
         })
       },
+      ...mapMutations({
+        setCurrentIndex: 'SET_CURRENT_INDEX'
+      }),
       ...mapActions([
         'insertProject'
       ])

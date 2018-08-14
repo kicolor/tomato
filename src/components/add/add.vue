@@ -40,20 +40,14 @@
         vm.flag = true
         vm.task = ''
         vm.proName = '默认项目'
-        // vm.type = matterType.plan
+        vm.type = vm.mode || matterType.plan
         vm.rangeType = [matterType.plan, matterType.task, matterType.cart]
         vm.predict = 0
         vm.letter = '首字母'
         // vm._getProList()
       })
     },
-    props: {
-      type: {
-        type: String,
-        required: false,
-        default: matterType.plan
-      }
-    },
+    props: ['mode'],
     data () {
       return {
         flag: true,
@@ -62,7 +56,7 @@
         // proList: [],
         proName: '',
         // allProName: [],
-        // type: '',
+        type: '',
         rangeType: [],
         predict: 0,
         letter: ''
@@ -184,7 +178,9 @@
       ])
     },
     watch: {
+      proName() {
 
+      }
     },
     components: {
       Group,
