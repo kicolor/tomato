@@ -13,7 +13,7 @@
           </detail-item>
           <detail-item :type="archive" :list="archiveList">
           </detail-item>
-          <x-button v-if="!isDefaultPro" class="btn" @click.native="archivePro">归档</x-button>
+          <x-button v-if="!isDefaultPro" class="btn" @click.native="changeProAttribute">{{changeProText}}</x-button>
           <x-button v-if="!isDefaultPro" class="btn" @click.native="delPro">删除</x-button>
         </div>
       </scroll>
@@ -28,7 +28,7 @@
   import { Group, Cell, XInput, XButton } from 'vux'
   import { ERR_OK } from 'api/config'
   import {matterType} from 'common/js/config'
-  import { addMatterToPro, batchDelPro, batchArchivePro } from 'api/project'
+  import { addMatterToPro, batchDelPro, batchArchivePro, updatePro } from 'api/project'
   import { getFirstChar, popupTips } from 'common/js/util'
   import {mapGetters, mapActions} from 'vuex'
 
@@ -74,6 +74,9 @@
       }
     },
     computed: {
+      changeProText() {
+        return this.currentProject.archive ? '激活' : '归档'
+      },
       cartList() {
         return this.list[0] && this.list[0].items
       },
@@ -110,28 +113,59 @@
       addToTask(desc) {
         this._addToList(1, desc)
       },
+      changeProAttribute() {
+        if (this.currentProject.archive) {
+          this.activePro()
+        } else {
+          this.archivePro()
+        }
+      },
+      delPro() {
+        const _id = this.currentProject.id
+        batchDelPro(_id).then(res => {
+          if (res.code === ERR_OK) {
+            let taskArr = this.list[1].items
+            this.deleteProject()
+            this.deleteTaskArr(taskArr)
+            this.tips = '删除成功'
+            this.$router.back()
+          }
+        })
+      },
       archivePro() {
+        console.log('归档', this.currentProject)
         const _id = this.currentProject.id
         let updateData = {
           archive: true
         }
         batchArchivePro(_id, this._matterIds, updateData).then(res => {
           if (res.code === ERR_OK) {
-            let archiveArr = this.list[0].items.concat(this.list[1].items)
-            this.archiveProject(archiveArr)
-            this.deleteTaskArr(this.list[1].items)
+            let taskArr = this.list[1].items
+            let archiveArr = this.list[0].items.concat(taskArr)
+            // this.archiveProject(archiveArr)
+            this.changeProjectAttribute({
+              archive: true,
+              archiveArr
+            })
+            this.deleteTaskArr(taskArr)
             this.tips = '归档成功'
             this.$router.back()
           }
         })
       },
-      delPro() {
+      activePro() {
+        console.log('激活', this.currentProject)
         const _id = this.currentProject.id
-        batchDelPro(_id).then(res => {
+        let updateData = {
+          archive: false
+        }
+        updatePro(_id, updateData).then(res => {
           if (res.code === ERR_OK) {
-            this.deleteProject()
-            this.deleteTaskArr(this.list[1].items)
-            this.tips = '删除成功'
+            // this.activeProject()
+            this.changeProjectAttribute({
+              archive: false
+            })
+            this.tips = '激活成功'
             this.$router.back()
           }
         })
@@ -192,8 +226,10 @@
         'insertMatter',
         'insertTask',
         'deleteProject',
+        'changeProjectAttribute',
         'archiveProject',
-        'deleteTaskArr'
+        'deleteTaskArr',
+        'activeProject'
       ])
     },
     components: {

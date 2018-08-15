@@ -36,6 +36,7 @@
   import { Icon } from 'vux'
   import { ERR_OK } from 'api/config'
   import { addPro, getAllPro } from 'api/project'
+  import { popupTips } from 'common/js/util.js'
   import {mapGetters, mapMutations, mapActions} from 'vuex'
 
   export default {
@@ -79,20 +80,24 @@
     },
     methods: {
       addProject() {
-        let pro = {
-          name: this.desc,
-          bgImg: '0.jpg',
-          archive: false
-        }
-        addPro(pro).then(res => {
-          if (res.code === ERR_OK) {
-            let project = res.data
-            project.matter = []
-            // this.projectList.unshift(pro)
-            this.insertProject(project)
-            this.desc = ''
+        if (this.desc === '默认项目') {
+          popupTips(this, 'warn', '不能新建【默认项目】')
+        } else {
+          let pro = {
+            name: this.desc,
+            bgImg: '0.jpg',
+            archive: false
           }
-        })
+          addPro(pro).then(res => {
+            if (res.code === ERR_OK) {
+              let project = res.data
+              project.matter = []
+              // this.projectList.unshift(pro)
+              this.insertProject(project)
+              this.desc = ''
+            }
+          })
+        }
       },
       selectItem(index) {
         this.setCurrentIndex(index)

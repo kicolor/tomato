@@ -45,6 +45,7 @@
   import { Sticky, Group, Cell, Tab, TabItem, ViewBox, XInput, XDialog } from 'vux'
   import { getAllPro, addPro } from 'api/project'
   import { ERR_OK } from 'api/config'
+  import { popupTips } from 'common/js/util.js'
   import {mapGetters, mapMutations, mapActions} from 'vuex'
 
   export default {
@@ -147,19 +148,23 @@
         this.showDialog = false
       },
       addPro(desc) {
-        let pro = {
-          name: desc,
-          bgImg: '0.jpg',
-          archive: false
-        }
-        addPro(pro).then(res => {
-          if (res.code === ERR_OK) {
-            let project = res.data
-            project.matter = []
-            // this.projectList.push(pro)
-            this.insertProject(project)
+        if (desc === '默认项目') {
+          popupTips(this, 'warn', '不能新建【默认项目】')
+        } else {
+          let pro = {
+            name: desc,
+            bgImg: '0.jpg',
+            archive: false
           }
-        })
+          addPro(pro).then(res => {
+            if (res.code === ERR_OK) {
+              let project = res.data
+              project.matter = []
+              // this.projectList.push(pro)
+              this.insertProject(project)
+            }
+          })
+        }
       },
       chooseTab(index) {
         this.proIndex = index * this.proList.length

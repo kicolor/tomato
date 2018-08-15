@@ -241,10 +241,40 @@ export const deleteProject = function ({commit, state}) {
   commit(types.SET_PROJECT_LIST, projectList)
 }
 
-export const activeProject = function ({commit, state}, projectId) {
-  let projectList = state.projectList.slice()
-  let projectIndex = findIndexOfId(projectList, projectId)
-  let pro = projectList.splice(projectIndex, 1)
+export const changeProjectAttribute = function ({commit, state}, {archive, archiveArr = []}) {
+  let projectList = deepCopy(state.projectList)
+  // let index = findIndexOfId(projectList, projectId)
+  let index = state.currentIndex
+  let project = projectList.splice(index, 1)[0]
+  if (archive) {
+    index = projectList.findIndex(item => {
+      return item.archive && item.createdAt < project.createdAt
+    })
+  } else {
+    index = projectList.findIndex(item => {
+      return item.archive || item.createdAt < project.createdAt
+    })
+  }
+  project.archive = archive
+  archiveArr.map(item => {
+    let i = findIndex(project.matter, item)
+    project.matter[i].archive = true
+  })
+  if (index === -1) {
+    projectList.push(project)
+    index = projectList.length - 1
+  } else {
+    projectList.splice(index, 0, project)
+  }
+  commit(types.SET_CURRENT_INDEX, index)
+  commit(types.SET_PROJECT_LIST, projectList)
+}
+
+export const activeProject = function ({commit, state}) {
+  let projectList = deepCopy(state.projectList)
+  // let projectIndex = findIndexOfId(projectList, projectId)
+  let projectIndex = state.currentIndex
+  let pro = projectList.splice(projectIndex, 1)[0]
   let index = projectList.findIndex(item => {
     return item.archive || item.createdAt < pro.createdAt
   })

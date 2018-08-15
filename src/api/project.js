@@ -58,7 +58,7 @@ export function addPro(pro) {
 
 // 更新项目
 export function updatePro(id, pro) {
-  put(className, id, pro)
+  return put(className, id, pro)
 }
 
 // 删除项目及所有事项
