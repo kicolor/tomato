@@ -8,12 +8,12 @@
       <scroll class="plan-detail">
         <div>
           <group class="vux-group" label-margin-right="2em" label-align="left">
-            <popup-picker title="任务" :columns="2" :data="taskArr" v-model="task" :display-format="taskName" @on-change="changeTask" ref="task">
+            <popup-picker title="任务" :columns="2" :data="taskArr" v-model="task" :display-format="taskName">
             </popup-picker>
-            <cell title="番茄" :value="plan.fulfill"></cell>
-            <cell title="耗时" :value="plan.spendTime"></cell>
+            <cell title="番茄" :value="plan && plan.fulfill"></cell>
+            <cell title="耗时" :value="plan && plan.spendTime"></cell>
             <cell title="预计消耗番茄">
-              <inline-x-number style="display:block; background:#222;" :min="0" button-style="round" v-model="plan.predict"></inline-x-number>
+              <inline-x-number style="display:block; background:#222;" :min="0" button-style="round" v-model="plan && plan.predict"></inline-x-number>
             </cell>
             <cell title="添加日期" :value="date"></cell>
           </group>
@@ -33,6 +33,7 @@
   import { popupTips } from 'common/js/util'
   // import { getAllMatter } from 'api/matter'
   import { updatePlan, deletePlan } from 'api/plan'
+  import {mapGetters, mapActions} from 'vuex'
 
   export default {
     beforeRouteEnter (to, from, next) {
@@ -41,7 +42,8 @@
           console.log('vm.plan', vm.plan)
           vm.task.push(vm.plan.desc)
           vm.tips = ''
-          vm._getTaskList(vm.allMatter)
+          vm.originMatterId = vm.plan.matter
+          vm._getTaskList(vm.taskList)
         } else {
           vm.$router.push({
             path: '/today'
@@ -62,7 +64,7 @@
     created () {
       // this._getTaskList()
     },
-    props: ['plan', 'allMatter'],
+    props: ['plan'],
     data () {
       return {
         tips: '',
@@ -70,7 +72,8 @@
         task: [],
         taskName: function(val, name) {
           return name.split(' ')[1]
-        }
+        },
+        originMatterId: ''
       }
     },
     mounted() {
@@ -78,13 +81,13 @@
     },
     computed: {
       date() {
-        return this.plan.createdAt && this.plan.createdAt.substring(0, 10)
-      }
+        return this.plan && this.plan.createdAt && this.plan.createdAt.substring(0, 10)
+      },
+      ...mapGetters([
+        'taskList'
+      ])
     },
     methods: {
-      changeTask() {
-        // console.log('task', this.task)
-      },
       back () {
         this.$router.back()
       },
@@ -97,6 +100,10 @@
         }
         updatePlan(_id, updateData).then(res => {
           if (res.code === ERR_OK) {
+            this.modifyPlan({
+              plan: res.data,
+              matterId: this.originMatterId
+            })
             this.tips = '修改成功'
             this.$router.back()
           }
@@ -160,7 +167,10 @@
       _getProId(list, matterId) {
         let target = list.find(item => item.value === matterId)
         return target && target.parent
-      }
+      },
+      ...mapActions([
+        'modifyPlan'
+      ])
     },
     components: {
       Scroll,

@@ -12,7 +12,7 @@
           </slider>
         </div>
         <div v-show="planList.length" class="plan-list">
-            <plan-list ref="list" :plan-list="sequencePlanList" :all-matter="allMatter"/>
+            <plan-list ref="list" :plan-list="sequencePlanList"/>
         </div>
       </div>
       <tips v-show="loadMatter && !planList.length" :type="type" class="tips"></tips>

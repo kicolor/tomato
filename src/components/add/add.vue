@@ -8,8 +8,8 @@
       <div class="add-task">
         <group class="vux-group" label-margin-right="2em" label-align="left">
           <x-input class="task-name" title="任务名称" v-model="task" placeholder="请填写任务名称"></x-input>
-          <popup-radio title="项目" :options="allProName" v-model="proName">
-            </popup-radio>
+          <popup-picker title="项目" :columns="2" :data="proArr" v-model="project" show-name ref="project">
+            </popup-picker>
           <popup-radio title="状态" :options="rangeType" v-model="type">
           </popup-radio>
           <cell title="预计消耗番茄" value="0">
@@ -26,7 +26,7 @@
 
 <script type="text/ecmascript-6">
 
-  import { Group, Cell, XInput, PopupRadio, InlineXNumber, XButton } from 'vux'
+  import { Group, Cell, XInput, PopupPicker, PopupRadio, InlineXNumber, XButton } from 'vux'
   import { ERR_OK } from 'api/config'
   import { matterType } from 'common/js/config'
   import { addMatterToPro, getAllPro } from 'api/project'
@@ -39,11 +39,11 @@
       next(vm => {
         vm.flag = true
         vm.task = ''
-        vm.proName = '默认项目'
         vm.type = vm.mode || matterType.plan
         vm.rangeType = [matterType.plan, matterType.task, matterType.cart]
         vm.predict = 0
         vm.letter = '首字母'
+        vm.project = Array.of(vm.proArr.slice(-1)[0].value)
         // vm._getProList()
       })
     },
@@ -54,8 +54,9 @@
         show: false,
         task: '',
         // proList: [],
-        proName: '',
+        // proName: '',
         // allProName: [],
+        project: [],
         type: '',
         rangeType: [],
         predict: 0,
@@ -64,11 +65,14 @@
       }
     },
     computed: {
-      allProName() {
-        return this._getAllProName(this.projectList)
-      },
       rangeLetter() {
         return this._getRangeLetter()
+      },
+      proName() {
+        return this.$refs.project.getNameValues()
+      },
+      proArr() {
+        return this._getProArr(this.projectList)
       },
       ...mapGetters([
         'projectList'
@@ -97,7 +101,8 @@
           if (this.type === matterType.cart) {
             state = false
           }
-          let _proId = this._getProId(this.projectList, this.proName)
+          // let _proId = this._getProId(this.projectList, this.proName)
+          let _proId = this.project
           let currentMatter = {
             desc: this.task,
             project: _proId,
@@ -156,8 +161,18 @@
           }
         })
       },
-      _getAllProName(list) {
-        return list.map(item => item.name)
+      _getProArr(list) {
+        let arr = []
+        list.map(item => {
+          if (!item.archive) {
+            arr.push({
+              name: item.name,
+              value: item.id,
+              parent: 0
+            })
+          }
+        })
+        return arr
       },
       _getProId(list, name) {
         let target = list.find(item => item.name === name)
@@ -177,15 +192,11 @@
         'insertPlan'
       ])
     },
-    watch: {
-      proName() {
-
-      }
-    },
     components: {
       Group,
       Cell,
       XInput,
+      PopupPicker,
       PopupRadio,
       InlineXNumber,
       XButton

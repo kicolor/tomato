@@ -7,7 +7,7 @@
     <ul>
       <li v-for="group in planList" class="list-group" ref="listGroup" :key="group.title" v-show="hasPlan(group)">
         <h2 class="list-group-title">{{group.title}}</h2>
-        <plan-item v-show="showItem(group.title, plan)" v-for="plan in group.items" :plan="plan" :key="plan.id" :plan-index="planIndex"  @click.native="selectItem(plan)" @complete="isComplete" @select="selectPlan" @start="startPlan"/>
+        <plan-item v-show="showItem(group.title, plan)" v-for="plan in group.items" :plan="plan" :key="plan.id" :plan-index="planIndex"  @click.native="selectItem(plan)" @complete="isComplete" @select="select" @start="startPlan"/>
       </li>
     </ul>
   </scroll>
@@ -28,7 +28,7 @@
       this.touch = {}
       this.listHeight = []
     },
-    props: ['planList', 'allMatter'],
+    props: ['planList'],
     data() {
       return {
         planIndex: 0
@@ -49,7 +49,10 @@
         }
         updatePlan(_id, updateData).then(res => {
           if (res.code === ERR_OK) {
-            this.modifyPlan(res.data)
+            this.modifyPlan({
+              plan: res.data,
+              matterId: res.data.matter
+            })
             // let list = this._updatePlan(res.data)
             // this.$emit('update:planList', list)
           }
@@ -71,13 +74,12 @@
         // }
         this.selectPlan(plan)
       },
-      selectPlan(plan) {
+      select(plan) {
         if (plan.id) {
           this.$router.push({
             name: 'planDetail',
             params: {
-              plan: plan,
-              allMatter: this.allMatter
+              plan: plan
             }
           })
         } else {

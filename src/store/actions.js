@@ -134,12 +134,19 @@ export const insertPlan = function ({commit, state}, plan) {
 //   commit(types.SET_PLAN_LIST, planList)
 // }
 
-export const modifyPlan = function ({commit, state}, plan) {
+export const modifyPlan = function ({commit, state}, {plan, matterId}) {
   let taskList = deepCopy(state.taskList)
   let taskIndex = findIndexOfId(taskList, plan.matter)
   let planList = taskList[taskIndex].plan
   let planIndex = findIndexOfId(planList, plan.id)
-  planList.splice(planIndex, 1, plan)
+  if (plan.matter === matterId) {
+    planList.splice(planIndex, 1, plan)
+  } else {
+    let matterIndex = findIndexOfId(taskList, matterId)
+    let matterList = taskList[matterIndex].plan
+    matterList.splice(planIndex, 1)
+    planList.push(plan)
+  }
   commit(types.SET_TASK_LIST, taskList)
 }
 
@@ -181,6 +188,7 @@ export const deleteTaskArr = function ({commit, state}, taskArr) {
 export const changeMatterAttribute = function ({commit, state}, {projectId, matterId, task = {}}) {
   let projectList = deepCopy(state.projectList)
   let projectIndex = findIndexOfId(projectList, projectId)
+  // let index = state.currentIndex
   let matterList = projectList[projectIndex].matter
   let matterIndex = findIndexOfId(matterList, matterId)
   if (Object.keys(task).length) {
@@ -201,8 +209,10 @@ export const changeMatterAttribute = function ({commit, state}, {projectId, matt
 
 export const insertMatter = function ({commit, state}, {project, matter}) {
   let projectList = deepCopy(state.projectList)
-  // let index = findIndex(projectList, project)
   let index = state.currentIndex
+  if (index === -1) {
+    index = findIndex(projectList, project)
+  }
   let pro = projectList.splice(index, 1)[0]
   if (pro.archive) {
     index = projectList.findIndex(item => {
@@ -228,6 +238,18 @@ export const deleteProject = function ({commit, state}) {
   let index = state.currentIndex
   projectList.splice(index, 1)
   commit(types.SET_CURRENT_INDEX, -1)
+  commit(types.SET_PROJECT_LIST, projectList)
+}
+
+export const activeProject = function ({commit, state}, projectId) {
+  let projectList = state.projectList.slice()
+  let projectIndex = findIndexOfId(projectList, projectId)
+  let pro = projectList.splice(projectIndex, 1)
+  let index = projectList.findIndex(item => {
+    return item.archive || item.createdAt < pro.createdAt
+  })
+  pro.archive = false
+  projectList.splice(index, 0, pro)
   commit(types.SET_PROJECT_LIST, projectList)
 }
 

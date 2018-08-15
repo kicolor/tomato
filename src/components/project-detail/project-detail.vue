@@ -138,7 +138,7 @@
       },
       _addToList(index, desc) {
         let _id = this.currentProject.id
-        let matter = {
+        let currentMatter = {
           project: _id,
           desc: desc,
           state: index,
@@ -146,7 +146,7 @@
           proName: this.currentProject.name,
           key: getFirstChar(desc).toUpperCase()
         }
-        addMatterToPro(_id, matter).then(res => {
+        addMatterToPro(_id, currentMatter).then(res => {
           if (res.code === ERR_OK) {
             let matter = res.data[0]
             let project = res.data[1]

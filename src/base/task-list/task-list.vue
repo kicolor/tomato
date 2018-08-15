@@ -10,7 +10,7 @@
       <li v-for="group in taskList" class="list-group" ref="listGroup" :key="group.title">
         <h2 class="list-group-title">{{group.title}}</h2>
         <task-item v-for="(item, index) in group.items"
-                   :plan="item"
+                   :task="item"
                    :task-index="taskIndex"
                    :key="item.id"
                    @choose="selectItem"
@@ -122,12 +122,12 @@
           }
         })
       },
-      writeTask(plan) {
-        if (plan.id) {
+      writeTask(task) {
+        if (task.id) {
           this.$router.push({
             name: 'matterDetail',
             params: {
-              matter: plan
+              matter: task
             }
           })
         } else {
@@ -136,17 +136,23 @@
           })
         }
       },
-      archiveTask(plan) {
-        let _id = plan.id
+      archiveTask(task) {
+        let _id = task.id
         let updateData = {
           archive: true
         }
         batchUpdateMatter(_id, updateData).then(res => {
           if (res.code === ERR_OK) {
             console.log('batchUpdateMatter', res.data)
-            this.inactivateTask(res.data[1].id)
+            let task = res.data[1]
+            this.inactivateTask(_id)
+            this.changeMatterAttribute({
+              projectId: task.project,
+              matterId: _id,
+              task
+            })
             // let list = this._updateList(this.taskList, _id)
-            popupTips(this, 'success', `${plan.desc}已归档`, 1000, 'bottom')
+            popupTips(this, 'success', `${task.desc}已归档`, 1000, 'bottom')
             // this.$emit('update:taskList', list)
           } else {
           }
@@ -166,15 +172,18 @@
           })
         }
       },
-      deleteTask(plan) {
-        let _id = plan.id
-        console.log('plan', plan)
+      deleteTask(task) {
+        let _id = task.id
+        console.log('task', task)
         deleteMatter(_id).then(res => {
           if (res.code === ERR_OK) {
-            // *** 在列表中删除该任务
             this.inactivateTask(_id)
             // let list = this._updateList(this.taskList, _id)
-            popupTips(this, 'success', `${plan.desc}已删除`, 1000, 'bottom')
+            this.changeMatterAttribute({
+              projectId: task.project,
+              matterId: _id
+            })
+            popupTips(this, 'success', `${task.desc}已删除`, 1000, 'bottom')
             // this.$emit('update:taskList', list)
           } else {
           }
@@ -243,7 +252,8 @@
       },
       ...mapActions([
         'insertPlan',
-        'inactivateTask'
+        'inactivateTask',
+        'changeMatterAttribute'
       ])
     },
     watch: {

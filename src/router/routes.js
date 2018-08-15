@@ -146,7 +146,7 @@ export default [
     component: Task,
     children: [
       {
-        name: 'play',
+        // name: 'play',
         path: 'play',
         component: Play,
         props: true

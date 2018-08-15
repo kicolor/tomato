@@ -11,8 +11,8 @@
             <x-input class="title"  v-model="matter.desc" text-align="center" :show-clear="false"></x-input>
             <cell title="番茄" :value="matter.fulfill"></cell>
             <cell title="耗时" value="0m"></cell>
-            <popup-radio title="项目" :options="allProName" v-model="proName">
-            </popup-radio>
+            <popup-picker title="项目" :columns="2" :data="proArr" v-model="project" show-name ref="project">
+            </popup-picker>
             <cell title="预计消耗番茄">
               <inline-x-number style="display:block; background:#222;" :min="0" button-style="round" v-model="matter.predict"></inline-x-number>
             </cell>
@@ -34,7 +34,7 @@
 <script type="text/ecmascript-6">
 
   import Scroll from 'base/scroll/scroll'
-  import { Group, Cell, XInput, XButton, PopupRadio, InlineXNumber } from 'vux'
+  import { Group, Cell, XInput, XButton, PopupPicker, PopupRadio, InlineXNumber } from 'vux'
   import { ERR_OK } from 'api/config'
   import { matterType } from 'common/js/config'
   import { getFirstChar, popupTips } from 'common/js/util'
@@ -46,10 +46,12 @@
     beforeRouteEnter (to, from, next) {
       next(vm => {
         if (vm.matter) {
-          vm.proName = vm.matter.proName
+          // vm.proName = vm.matter.proName
+          vm.originProId = vm.matter.project
+          vm.project = Array.of(vm.originProId)
+          console.log('vm.project', vm.project)
           vm.letter = vm.matter.key
           vm.tips = ''
-          vm.originProId = vm.matter.project
         } else {
           vm.$router.push({
             path: '/task'
@@ -76,7 +78,9 @@
         tips: '',
         // projectList: [],
         // allProName: [],
-        proName: '',
+        // proArr: [],
+        project: [],
+        // proName: '',
         // rangeLetter: [],
         letter: '',
         originProId: ''
@@ -99,8 +103,11 @@
       date() {
         return this.matter.createdAt && this.matter.createdAt.substring(0, 10)
       },
-      allProName() {
-        return this._getAllProName(this.projectList)
+      proName() {
+        return this.$refs.project.getNameValues()
+      },
+      proArr() {
+        return this._getProArr(this.projectList)
       },
       rangeLetter() {
         return this._getRangeLetter()
@@ -144,7 +151,8 @@
           popupTips(this, 'warns', '请填写任务名称')
         } else {
           const _id = this.matter.id
-          const _proId = this._getProId(this.projectList, this.proName)
+          // const _proId = this._getProId(this.projectList, this.proName)
+          const _proId = this.project[0]
           let key = this.letter
           if (key === '首字母') {
             key = getFirstChar(this.matter.desc).toUpperCase()
@@ -211,8 +219,18 @@
           }
         })
       },
-      _getAllProName(list) {
-        return list.map(item => item.name)
+      _getProArr(list) {
+        let arr = []
+        list.map(item => {
+          if (!item.archive) {
+            arr.push({
+              name: item.name,
+              value: item.id,
+              parent: 0
+            })
+          }
+        })
+        return arr
       },
       _getProId(list, name) {
         let target = list.find(item => item.name === name)
@@ -239,6 +257,7 @@
       Cell,
       XInput,
       XButton,
+      PopupPicker,
       PopupRadio,
       InlineXNumber
     }

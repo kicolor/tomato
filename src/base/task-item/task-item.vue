@@ -1,14 +1,14 @@
 <template>
     <ul>
-        <li :class="{'choose': taskIndex === plan.id }">
+        <li :class="{'choose': taskIndex === task.id }">
           <section class="section-item" @click.stop="selectTask">
             <p class="desc">
-              <span class="plan-desc">{{plan.desc}}</span>
-              <span class="plan-project">{{plan.proName}}</span>
+              <span class="task-desc">{{task.desc}}</span>
+              <span class="task-project">{{task.proName}}</span>
             </p>
-            <span class="plan-count">{{planCount}}</span>
+            <span class="task-count">{{taskCount}}</span>
           </section>
-          <menu class="menu-item" v-show="taskIndex === plan.id">
+          <menu class="menu-item" v-show="taskIndex === task.id">
             <x-icon class="icon" type="today" @click.stop="createPlan"></x-icon>
             <x-icon class="icon" type="create" @click.stop="writeTask"></x-icon>
             <x-icon class="icon" type="checkbox-outline" @click.stop="archiveTask"></x-icon>
@@ -22,31 +22,30 @@
 <script type="text/ecmascript-6">
 
   export default {
-    props: ['plan', 'taskIndex'],
+    props: ['task', 'taskIndex'],
     computed: {
-      planCount() {
-        return `${this.plan.fulfill} / ${this.plan.predict}`
+      taskCount() {
+        return `${this.task.fulfill} / ${this.task.predict}`
       }
     },
     methods: {
       selectTask() {
-        this.$emit('choose', this.plan)
+        this.$emit('choose', this.task)
       },
       createPlan() {
         this.$emit('create')
       },
       writeTask() {
-        this.$emit('write', this.plan)
+        this.$emit('write', this.task)
       },
       archiveTask() {
-        this.$emit('archive', this.plan)
+        this.$emit('archive', this.task)
       },
       startPlan() {
-        this.$emit('start', this.plan)
+        this.$emit('start', this.task)
       },
       deleteTask() {
-        console.log('del')
-        this.$emit('del', this.plan)
+        this.$emit('del', this.task)
       }
     }
   }
@@ -64,16 +63,16 @@
     padding: 30px 0 30px 30px
     .desc
       flex: auto
-      .plan-desc
+      .task-desc
         display: block
         font-size: $font-size-medium-x
         color: $color-text-ll
-      .plan-project
+      .task-project
         margin-top: 20px
         display: block
         font-size: $font-size-small-s
         color: $color-text-l
-    .plan-count
+    .task-count
       flex: none
       margin: 0 60px 0 30px
       font-size: $font-size-medium
