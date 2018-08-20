@@ -12,6 +12,8 @@ const request = axios.create({
 
 // 错误信息
 const createError = (code, resp) => {
+  console.log('code', code)
+  console.log('resp', resp)
   const err = new Error(resp.message)
   err.code = code
   return err
@@ -19,11 +21,17 @@ const createError = (code, resp) => {
 
 // 处理请求返回结果
 const handleRequest = ({ status, data, ...rest }) => {
+  console.log('handleRequest')
   if (status === 200) {
     console.log('handleRequest', data)
     return {
       code: 0,
-      data: data
+      data
+    }
+  } else if (status === 202 || status === 401) {
+    return {
+      code: 1,
+      data
     }
   } else {
     throw createError(status, rest)
@@ -41,6 +49,8 @@ const getHeaders = () => {
 
 // 创建对象
 export const post = async function (className, data) {
+  console.log('className', className)
+  console.log('data', data)
   return handleRequest(await request.post(
     `/${className}`,
     data,

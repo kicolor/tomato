@@ -13,10 +13,12 @@
     <x-dialog v-model="loginDialog" hide-on-blur :dialog-style="{'max-width': '100%', width: '80%', height: 'auto', 'background-color': '#333'}">
       <div class="dialog-content vux-group">
         <p>{{header}}</p>
-        <x-input v-show="isAccount" type="text" :title="accountText" class="vux-dialog-input" :value="account" required ref="account"></x-input>
-        <x-input v-show="isEmail" is-type="email" :title="emailText" class="vux-dialog-input" :value="email" required :show-clear="false" ref="email"></x-input>
-        <x-input v-show="isPassword" type="password" :title="passwordText" class="vux-dialog-input" :value="password" required ref="password"></x-input>
-        <x-input v-show="isCheckPassword" type="password" :title="checkPasswordText" class="vux-dialog-input" :value="checkPassword" required ref="checkPassword"></x-input>
+        <!-- <group class="dialog-group"> -->
+          <x-input v-show="isAccount" type="text" :title="accountText" class="vux-dialog-input" v-model="account" required ref="account"></x-input>
+          <x-input v-show="isEmail" is-type="email" :title="emailText" class="vux-dialog-input" v-model="email" required :show-clear="false" ref="email"></x-input>
+          <x-input v-show="isPassword" type="password" :title="passwordText" class="vux-dialog-input" v-model="password" required ref="password"></x-input>
+          <x-input v-show="isCheckPassword" type="password" :title="checkPasswordText" class="vux-dialog-input" v-model="checkPassword" required ref="checkPassword"></x-input>
+        <!-- </group> -->
         <span @click="link" ref="left">{{linkLeft}}</span>
         <span @click="link">{{linkRight}}</span>
         <button class="dialog-btn" @click="submit">{{submitText}}</button>
@@ -27,8 +29,10 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { XDialog, XInput } from 'vux'
-  import { addUser } from 'api/user'
+  import { XDialog, Group, XInput } from 'vux'
+  import {ERR_OK} from 'api/config'
+  import { addUser, login } from 'api/user'
+  import { popupTips } from 'common/js/util'
 
   export default {
     name: 'user-dialog',
@@ -71,9 +75,9 @@
       }
     },
     methods: {
-      close () {
+      close (tips = '') {
         this.accountDialog = false
-        this.$emit('dialogClose')
+        this.$emit('dialogClose', tips)
       },
       link (e) {
         if (e.target.innerText === '登录') {
@@ -119,7 +123,25 @@
       },
       _login() {
         if (this.accountValid && this.passwordValid) {
-
+          let user = {
+            username: this.account,
+            password: this.password
+          }
+          login(user).then(res => {
+            if (res.code === ERR_OK) {
+              let tips = `${this.account}登录成功`
+              this.close(tips)
+            } else {
+              let error = res.data.error
+              if (error.message === 'The mailbox is not verified') {
+                popupTips(this, 'warn', '邮箱未验证', 1000)
+              } else if (error.message === 'login failed') {
+                popupTips(this, 'warn', '登录失败', 1000)
+              } else {
+                console.log('error', error)
+              }
+            }
+          })
         } else {
 
         }
@@ -127,19 +149,30 @@
       _register() {
         if (this.emailValid && this.accountValid && this.passwordValid && this.checkPasswordValid) {
           if (this.password === this.checkPassword) {
-            console.log('password', this.password)
-            console.log('checkPassword', this.checkPassword)
             let user = {
               email: this.email,
               username: this.account,
               password: this.password
             }
-            addUser(user)
+            addUser(user).then(res => {
+              if (res.code === ERR_OK) {
+                let tips = `激活邮件已发送，请前往激活`
+                this.close(tips)
+              } else {
+                let error = res.data.error
+                console.log('res', error)
+                if (error.message === 'username:already exists') {
+                  popupTips(this, 'warn', `用户名已存在`, 1000)
+                } else {
+                  console.log('error', error)
+                }
+              }
+            })
           } else {
-            console.log('密码不一致')
+            popupTips(this, 'warn', `密码不一致`, 1000)
           }
         } else {
-
+          popupTips(this, 'warn', `请完善信息`, 1000)
         }
       },
       _reset() {
@@ -172,6 +205,7 @@
     },
     components: {
       XDialog,
+      Group,
       XInput
     }
   }

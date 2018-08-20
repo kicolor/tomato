@@ -144,8 +144,12 @@
           name: 'projectDetail'
         })
       },
-      close () {
+      close (tips) {
         this.showDialog = false
+        if (tips) {
+          console.log('tips', tips)
+          popupTips(this, 'success', tips, 1000)
+        }
       },
       addPro(desc) {
         if (desc === '默认项目') {
